@@ -1,0 +1,26 @@
+{
+    "name": "slang-language-extension",
+    "displayName": "Slang Language Extension",
+    "description": "Extension for the Slang language",
+    "publisher": "shader-slang",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.67.0"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "contributes": {
+        "languages": [{
+            "id": "slang",
+            "aliases": ["Slang", "slang"],
+            "extensions": [".slang",".slangh"],
+            "configuration": "./language-configuration.json"
+        }],
+        "grammars": [{
+            "language": "slang",
+            "scopeName": "source.slang",
+            "path": "./syntaxes/slang.tmLanguage.json"
+        }]
+    }
+}
