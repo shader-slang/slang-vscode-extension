@@ -1,0 +1,23 @@
+{
+	"name": "slang-lsp-client",
+	"description": "VSCode part of Slang language server",
+	"author": "SlangDev",
+	"license": "MIT",
+	"version": "0.0.1",
+	"publisher": "shader-slang",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/shader-slang/slang-vscode-extension"
+	},
+	"engines": {
+		"vscode": "^1.63.0"
+	},
+	"dependencies": {
+		"vscode-languageclient": "^7.0.0"
+	},
+	"devDependencies": {
+		"@types/vscode": "^1.63.0",
+		"@vscode/test-electron": "^2.1.2"
+	},
+	"files": ["./server/bin"]
+}
