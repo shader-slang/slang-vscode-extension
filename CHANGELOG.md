@@ -1,9 +1,6 @@
 # Change Log
 
-All notable changes to the "slang-language-extension" extension will be documented in this file.
-
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
-
-## [Unreleased]
-
-- Initial release
+## v1.0.1
+- Package up javascript files for faster performance.
+- Add icon.
+- Add hlsl file extension.

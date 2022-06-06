@@ -3,7 +3,8 @@
     "displayName": "Slang Language Extension",
     "description": "Extension for the Slang language",
     "publisher": "shader-slang",
-    "version": "0.0.1",
+    "version": "1.0.1",
+    "icon": "icon.png",
     "engines": {
         "vscode": "^1.67.0"
     },
@@ -11,46 +12,73 @@
         "Programming Languages"
     ],
     "activationEvents": [
-		"onLanguage:slang"
-	],
-    "main": "./client/out/extension",
+        "onLanguage:slang"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/shader-slang/slang-vscode-extension"
+    },
+    "main": "./client/out/main",
+    "files": ["./server/bin"],
     "contributes": {
-        "languages": [{
-            "id": "slang",
-            "aliases": ["Slang", "slang"],
-            "extensions": [".slang",".slangh"],
-            "configuration": "./language-configuration.json"
-        }],
-        "grammars": [{
-            "language": "slang",
-            "scopeName": "source.slang",
-            "path": "./syntaxes/slang.tmLanguage.json"
-        }],
+        "languages": [
+            {
+                "id": "slang",
+                "aliases": [
+                    "Slang",
+                    "slang"
+                ],
+                "extensions": [
+                    ".slang",
+                    ".slangh",
+                    ".hlsl"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "slang",
+                "scopeName": "source.slang",
+                "path": "./syntaxes/slang.tmLanguage.json"
+            }
+        ],
         "configuration": {
-			"type": "object",
-			"title": "Slang Language Extension configuration",
-			"properties": {
-				"slang.trace.server": {
-					"scope": "window",
-					"type": "string",
-					"enum": [
-						"off",
-						"messages",
-						"verbose"
-					],
-					"default": "verbose",
-					"description": "Traces the communication between VS Code and the language server."
-				}
-			}
-		}
+            "type": "object",
+            "title": "Slang Language Extension configuration",
+            "properties": {
+                "slang.trace.server": {
+                    "scope": "window",
+                    "type": "string",
+                    "enum": [
+                        "off",
+                        "messages",
+                        "verbose"
+                    ],
+                    "default": "verbose",
+                    "description": "Traces the communication between VS Code and the language server."
+                }
+            }
+        }
     },
     "devDependencies": {
-		"@types/mocha": "^9.1.0",
-		"@types/node": "^16.11.7",
-		"@typescript-eslint/eslint-plugin": "^5.19.0",
-		"@typescript-eslint/parser": "^5.19.0",
-		"eslint": "^8.13.0",
-		"mocha": "^9.2.1",
-		"typescript": "^4.7.2"
-	}
+        "@types/mocha": "^9.1.0",
+        "@types/node": "^16.11.7",
+        "@typescript-eslint/eslint-plugin": "^5.19.0",
+        "@typescript-eslint/parser": "^5.19.0",
+        "eslint": "^8.13.0",
+        "mocha": "^9.2.1",
+        "typescript": "^4.7.2",
+        "esbuild": "^0.14.42"
+    },
+    "dependencies": {
+        "vscode-languageclient": "^7.0.0"
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run esbuild-base -- --minify",
+        "esbuild-base": "esbuild ./client/src/extension.ts --bundle --outfile=client/out/main.js --external:vscode --format=cjs --platform=node",
+        "esbuild": "npm run esbuild-base -- --sourcemap",
+        "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
+        "test-compile": "tsc -p ./"
+    }
 }

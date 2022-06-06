@@ -16,12 +16,24 @@ import {
 let client: LanguageClient;
 
 export function activate(context: ExtensionContext) {
+	var platformDirName: string = "win";
+	if (process.platform == 'win32')
+	{
+		platformDirName = "win";
+	}
+	else
+	{
+		platformDirName = "linux";
+	}
+	platformDirName = platformDirName + "-" + process.arch;
 	const serverModule = context.asAbsolutePath(
-		path.join('server', 'bin', 'slangd')
+		path.join('server', 'bin', platformDirName, 'slangd')
 	);
 	const serverOptions: ServerOptions = {
 		run : { command: serverModule, transport: TransportKind.stdio},
-		debug: {command: serverModule, transport: TransportKind.stdio, args: ["--debug"]}
+		debug: {command: serverModule, transport: TransportKind.stdio
+			//, args: ["--debug"]
+				}
 	};
 	// Options to control the language client
 	const clientOptions: LanguageClientOptions = {
