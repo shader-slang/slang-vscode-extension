@@ -3,8 +3,14 @@
 node_modules/
 src/
 out/
+client/
+!client/out/main.js
 tsconfig.json
 webpack.config.js
 vsc-extension-quickstart.md
 *.zip
 *.vsix
+*.map
+*.md
+!CHANGELOG.md
+!README.md

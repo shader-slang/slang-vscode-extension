@@ -1,5 +1,9 @@
 # Change Log
 
+## v1.0.4
+- Add commit characters for auto completion.
+- Fixed parser crashes.
+
 ## v1.0.3
 - Fixed file permission issue of the language server on linux.
 
