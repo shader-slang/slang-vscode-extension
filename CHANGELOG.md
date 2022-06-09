@@ -1,5 +1,9 @@
 # Change Log
 
+## v1.0.6
+- Further improves parser stability.
+- Add coloring for missing hlsl keywords.
+
 ## v1.0.4
 - Add commit characters for auto completion.
 - Fixed parser crashes.
