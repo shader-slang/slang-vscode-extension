@@ -71,7 +71,7 @@ jobs:
         repo: shader-slang/slang
         search_artifacts: true
     - name: Copy Slang binaries
-      run: 
+      run: |
         ls ./artifacts/
         mkdir ./server/bin/win-x32
         cp ./artifacts/windows-x86/release/slang.dll ./server/bin/win-x32/slang.dll
