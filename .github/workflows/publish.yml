@@ -53,15 +53,6 @@ jobs:
         # Optional, choose to skip unpacking the downloaded artifact(s)
         # default false
         #skip_unpack: false
-    - name: Download artifact - win x64
-      uses: dawidd6/action-download-artifact@v2
-      with:
-        workflow: windows.yml
-        branch: master
-        name: slang-build-Release-x64-
-        path: artifacts/
-        repo: shader-slang/slang
-        search_artifacts: true
     - name: Download artifact - win x32
       uses: dawidd6/action-download-artifact@v2
       with:
@@ -77,9 +68,6 @@ jobs:
         mkdir -p ./server/bin/win-x32
         cp ./artifacts/windows-x86/release/slang.dll ./server/bin/win-x32/slang.dll
         cp ./artifacts/windows-x86/release/slangd.exe ./server/bin/win-x32/slangd.exe
-        mkdir -p ./server/bin/win-x64
-        cp ./artifacts/windows-x64/release/slang.dll ./server/bin/win-x64/slang.dll
-        cp ./artifacts/windows-x64/release/slangd.exe ./server/bin/win-x64/slangd.exe
         mkdir -p ./server/bin/linux-x64
         cp ./artifacts/linux-x64/release/libslang.so ./server/bin/linux-x64/libslang.so
         cp ./artifacts/linux-x64/release/slangd ./server/bin/linux-x64/slangd

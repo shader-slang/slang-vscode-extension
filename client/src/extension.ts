@@ -19,13 +19,12 @@ export function activate(context: ExtensionContext) {
 	var platformDirName: string = "win";
 	if (process.platform == 'win32')
 	{
-		platformDirName = "win";
+		platformDirName = "win-x32";
 	}
 	else
 	{
-		platformDirName = "linux";
+		platformDirName = "linux-x64";
 	}
-	platformDirName = platformDirName + "-" + process.arch;
 	const serverModule = context.asAbsolutePath(
 		path.join('server', 'bin', platformDirName, 'slangd')
 	);
