@@ -72,6 +72,7 @@ jobs:
         search_artifacts: true
     - name: Copy Slang binaries
       run: 
+        ls ./artifacts/
         mkdir ./server/bin/win-x32
         cp ./artifacts/windows-x86/release/slang.dll ./server/bin/win-x32/slang.dll
         cp ./artifacts/windows-x86/release/slangd.exe ./server/bin/win-x32/slangd.exe
