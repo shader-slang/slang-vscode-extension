@@ -1,6 +1,7 @@
 .gitignore
 .vscode
 node_modules/
+artifacts/
 src/
 out/
 client/

@@ -1,0 +1,95 @@
+name: Build VSIX
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2.3.4
+      with:
+        submodules: 'true'
+        fetch-depth: '0'
+    - name: Download artifact - linux x64
+      uses: dawidd6/action-download-artifact@v2
+      with:
+        # Optional, GitHub token, a Personal Access Token with `public_repo` scope if needed
+        # Required, if artifact is from a different repo
+        # Required, if repo is private a Personal Access Token with `repo` scope is needed
+        #github_token: ${{secrets.GITHUB_TOKEN}}
+        # Required, workflow file name or ID
+        workflow: linux.yml
+        # Optional, will get head commit SHA
+        #pr: ${{github.event.pull_request.number}}
+        # Optional, no need to specify if PR is
+        #commit: ${{github.event.pull_request.head.sha}}
+        # Optional, will use the branch
+        branch: master
+        # Optional, defaults to all types
+        #event: push
+        # Optional, will use specified workflow run
+        #run_id: 1122334455
+        # Optional, run number from the workflow
+        #run_number: 34
+        # Optional, uploaded artifact name,
+        # will download all artifacts if not specified
+        # and extract them in respective subdirectories
+        # https://github.com/actions/download-artifact#download-all-artifacts
+        name: slang-build-release-x64-gcc
+        # Optional, directory where to extract artifact(s), defaults to current directory
+        path: artifacts/
+        # Optional, defaults to current repo
+        repo: https://github.com/shader-slang/slang
+        # Optional, check the workflow run whether it has an artifact
+        # then will get the last available artifact from previous workflow
+        # default false, just try to download from the last one
+        #check_artifacts:  false
+        # Optional, search for the last workflow run whose stored an artifact named as in `name` input
+        # default false
+        search_artifacts: true
+        # Optional, choose to skip unpacking the downloaded artifact(s)
+        # default false
+        #skip_unpack: false
+    - name: Download artifact - win x64
+      uses: dawidd6/action-download-artifact@v2
+      with:
+        workflow: windows.yml
+        branch: master
+        name: slang-build-Release-x64-
+        path: artifacts/
+        repo: https://github.com/shader-slang/slang
+        search_artifacts: true
+    - name: Download artifact - win x32
+      uses: dawidd6/action-download-artifact@v2
+      with:
+        workflow: windows.yml
+        branch: master
+        name: slang-build-Release-Win32-
+        path: artifacts/
+        repo: https://github.com/shader-slang/slang
+        search_artifacts: true
+    - name: Copy Slang binaries
+      run: 
+        mkdir ./server/bin/win-x32
+        cp ./artifacts/windows-x86/release/slang.dll ./server/bin/win-x32/slang.dll
+        cp ./artifacts/windows-x86/release/slangd.exe ./server/bin/win-x32/slangd.exe
+        mkdir ./server/bin/win-x64
+        cp ./artifacts/windows-x64/release/slang.dll ./server/bin/win-x64/slang.dll
+        cp ./artifacts/windows-x64/release/slangd.exe ./server/bin/win-x64/slangd.exe
+        mkdir ./server/bin/linux-x64
+        cp ./artifacts/linux-x64/release/libslang.so ./server/bin/linux-x64/libslang.so
+        cp ./artifacts/linux-x64/release/slangd ./server/bin/linux-x64/slangd
+        chmod +x ./server/bin/linux-x64/slangd
+    - name: NPM Install
+      run: npm install
+    - name: Build VSIX package
+      uses: lannonbr/vsce-action@3.0.0
+        with:
+          args: "package"
+    - uses: actions/upload-artifact@v3
+      with:
+        name: slang-vsix
+        path: |
+          *.vsix
