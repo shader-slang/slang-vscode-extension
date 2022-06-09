@@ -20,7 +20,7 @@
 		"include": "#switch_statement"
 	  },
 	  {
-		"match": "\\b(break|continue|do|else|for|goto|if|_Pragma|return|while)\\b",
+		"match": "\\b(break|continue|do|else|for|goto|if|return|while|try|throw|catch|defer|discard)\\b",
 		"name": "keyword.control.slang"
 	  },
 	  {
@@ -32,10 +32,10 @@
 	  },
 	  {
 		"name": "keyword.other.additional.slang",
-		"match": "\\b(try|throw|catch|defer|using|__generic|class|interface|func|associatedtype|public|internal|private|import|export|__exported|groupshared|let|var|property|extension|in|out|inout|ref|namespace|this|cbuffer)\\b"
+		"match": "\\b(throws|using|__generic|class|interface|func|associatedtype|public|internal|private|import|export|__exported|groupshared|let|var|property|extension|in|out|inout|ref|namespace|this|cbuffer|uniform)\\b"
 	  },
 	  {
-		"match": "\\b(const|extern|register|restrict|static|volatile|inline)\\b",
+		"match": "\\b(const|extern|register|restrict|static|volatile|inline|nointerpolation|precise|row_major|column_major)\\b",
 		"name": "storage.modifier.slang"
 	  },
 	  {
