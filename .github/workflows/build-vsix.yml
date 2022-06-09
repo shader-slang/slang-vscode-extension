@@ -87,7 +87,7 @@ jobs:
     - name: Build VSIX package
       uses: lannonbr/vsce-action@3.0.0
       with:
-        args: "package"
+        args: "--package"
     - uses: actions/upload-artifact@v3
       with:
         name: slang-vsix
