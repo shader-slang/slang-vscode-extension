@@ -41,7 +41,7 @@ jobs:
         # Optional, directory where to extract artifact(s), defaults to current directory
         path: artifacts/
         # Optional, defaults to current repo
-        repo: "shader-slang/slang"
+        repo: shader-slang/slang
         # Optional, check the workflow run whether it has an artifact
         # then will get the last available artifact from previous workflow
         # default false, just try to download from the last one
@@ -59,7 +59,7 @@ jobs:
         branch: master
         name: slang-build-Release-x64-
         path: artifacts/
-        repo: https://github.com/shader-slang/slang
+        repo: shader-slang/slang
         search_artifacts: true
     - name: Download artifact - win x32
       uses: dawidd6/action-download-artifact@v2
@@ -68,7 +68,7 @@ jobs:
         branch: master
         name: slang-build-Release-Win32-
         path: artifacts/
-        repo: https://github.com/shader-slang/slang
+        repo: shader-slang/slang
         search_artifacts: true
     - name: Copy Slang binaries
       run: 
