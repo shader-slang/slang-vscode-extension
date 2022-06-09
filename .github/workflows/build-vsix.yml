@@ -73,13 +73,13 @@ jobs:
     - name: Copy Slang binaries
       run: |
         ls ./artifacts/
-        mkdir ./server/bin/win-x32
+        mkdir -p ./server/bin/win-x32
         cp ./artifacts/windows-x86/release/slang.dll ./server/bin/win-x32/slang.dll
         cp ./artifacts/windows-x86/release/slangd.exe ./server/bin/win-x32/slangd.exe
-        mkdir ./server/bin/win-x64
+        mkdir -p ./server/bin/win-x64
         cp ./artifacts/windows-x64/release/slang.dll ./server/bin/win-x64/slang.dll
         cp ./artifacts/windows-x64/release/slangd.exe ./server/bin/win-x64/slangd.exe
-        mkdir ./server/bin/linux-x64
+        mkdir -p ./server/bin/linux-x64
         cp ./artifacts/linux-x64/release/libslang.so ./server/bin/linux-x64/libslang.so
         cp ./artifacts/linux-x64/release/slangd ./server/bin/linux-x64/slangd
         chmod +x ./server/bin/linux-x64/slangd
