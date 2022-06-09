@@ -85,10 +85,12 @@ jobs:
         cp ./artifacts/linux-x64/release/slangd ./server/bin/linux-x64/slangd
         chmod +x ./server/bin/linux-x64/slangd
     - name: Publish VSIX package
+      env:
+        VSCE_TOKEN: ${{ secrets.VS_MARKETPLACE_TOKEN }}
       run: |
         npm install
         npm install -g vsce
-        vsce publish -p ${{ secrets.VS_MARKETPLACE_TOKEN }}
+        vsce publish -p "$VSCE_TOKEN"
     - uses: actions/upload-artifact@v3
       with:
         name: slang-vsix
