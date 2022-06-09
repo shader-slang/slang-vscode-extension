@@ -1,5 +1,6 @@
 .gitignore
 .vscode
+.github
 node_modules/
 artifacts/
 src/
