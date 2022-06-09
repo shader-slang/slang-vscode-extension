@@ -1,6 +1,6 @@
 # Change Log
 
-## v1.0.6
+## v1.0.7
 - Further improves parser stability.
 - Add coloring for missing hlsl keywords.
 
