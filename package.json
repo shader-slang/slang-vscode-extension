@@ -47,9 +47,17 @@
         ],
         "configuration": {
             "type": "object",
-            "title": "Slang Language Extension configuration",
+            "title": "Slang/HLSL",
             "properties": {
-                "slang.trace.server": {
+                "slang.predefinedMacros": {
+                    "scope": "window",
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "examples": [["MY_MACRO", "MY_VALUE_MACRO=1"]],
+                    "default": [],
+                    "description": "Predefined macros to use in the language server. Each item contains one macro definition. You can also use \"macro_name=value\" syntax to specify the value of the macro."
+                },
+                "slangLanguageServer.trace.server": {
                     "scope": "window",
                     "type": "string",
                     "enum": [
@@ -57,7 +65,7 @@
                         "messages",
                         "verbose"
                     ],
-                    "default": "verbose",
+                    "default": "off",
                     "description": "Traces the communication between VS Code and the language server."
                 }
             }

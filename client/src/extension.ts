@@ -31,17 +31,13 @@ export function activate(context: ExtensionContext) {
 	const serverOptions: ServerOptions = {
 		run : { command: serverModule, transport: TransportKind.stdio},
 		debug: {command: serverModule, transport: TransportKind.stdio
-			//, args: ["--debug"]
+		//	, args: ["--debug"]
 				}
 	};
 	// Options to control the language client
 	const clientOptions: LanguageClientOptions = {
 		// Register the server for plain text documents
-		documentSelector: [{ scheme: 'file', language: 'slang' }],
-		synchronize: {
-			// Notify the server about file changes to '*.slang files contained in the workspace
-			fileEvents: workspace.createFileSystemWatcher('**/*.{slang,slangh}')
-		},
+		documentSelector: [{ scheme: 'file', language: 'slang' }]
 	};
 
 	// Create the language client and start the client.
