@@ -1,4 +1,7 @@
 # Change Log
+## V1.1.1
+- Fixed several scenarios where completion failed to trigger.
+- Fixed an issue that caused static variable members to be missing from static member completion suggestions.
 
 ## v1.1.0
 - Improved performance when processing large files.
