@@ -3,7 +3,7 @@
     "displayName": "Slang Language Extension",
     "description": "Extension for the Slang language",
     "publisher": "shader-slang",
-    "version": "1.1.1",
+    "version": "1.1.2",
     "icon": "icon.png",
     "engines": {
         "vscode": "^1.67.0"
@@ -28,12 +28,15 @@
                 "id": "slang",
                 "aliases": [
                     "Slang",
-                    "slang"
+                    "slang",
+                    "hlsl"
                 ],
                 "extensions": [
                     ".slang",
                     ".slangh",
-                    ".hlsl"
+                    ".hlsl",
+                    ".usf",
+                    ".ush"
                 ],
                 "configuration": "./language-configuration.json"
             }
@@ -56,6 +59,20 @@
                     "examples": [["MY_MACRO", "MY_VALUE_MACRO=1"]],
                     "default": [],
                     "description": "Predefined macros to use in the language server. Each item contains one macro definition. You can also use \"macro_name=value\" syntax to specify the value of the macro."
+                },
+                "slang.searchInAllWorkspaceDirectories": {
+                    "scope": "window",
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Controls whether or not the language server should look in all sub-directories in the current workspace for an include or imported file if it is not found in the explicitly specified search paths."
+                },
+                "slang.additionalSearchPaths": {
+                    "scope": "window",
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "examples": [["include/", "c:\\external-lib\\include"]],
+                    "default": [],
+                    "description": "The language server will search for the included or imported file in these additional directories first. If not found, the server will look in all sub directories in the current workspace (if enabled by the setting)."
                 },
                 "slangLanguageServer.trace.server": {
                     "scope": "window",

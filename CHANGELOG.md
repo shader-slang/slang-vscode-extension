@@ -1,5 +1,11 @@
 # Change Log
-## V1.1.1
+
+## v1.1.2
+- Add configuration for search paths.
+- Fix highlighting bug.
+- Improved parser recovery around undefined macro invocations.
+
+## v1.1.1
 - Fixed several scenarios where completion failed to trigger.
 - Fixed an issue that caused static variable members to be missing from static member completion suggestions.
 
