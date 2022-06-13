@@ -20,7 +20,7 @@ This extension provides the following assisting features:
 Auto completion and signature help:  
 ![Auto completion and signature help](doc/member-completion.gif)
 
-HLSL Semantics suggestions:
+HLSL Semantics suggestions:  
 ![](doc/hlsl-semantic-completion.gif)
 
 Goto definition:  
