@@ -15,6 +15,16 @@ This extension provides the following assisting features:
 - Go to definition: jumps to the source location that defines the current symbol.
 - Diagnostics: displays current compilation errors.
 
+## Configurations
+
+### Predefined preprocessor macros
+
+You can specifiy the set of predefined preprocessor macros that the language server will use via the `slang.predefinedMacros` setting. This will help the language server to provide more accurate result.
+
+### Additional Search Path
+
+By default, the extension will search for all sub directories in the current workspace for an included or imported file. You can specify additional search paths via the `slang.additionalSearchPaths` setting, which will be looked at first. You can also disable the search in workspace directories and make the extension to search only in configured search paths (via `slang.searchInAllWorkspaceDirectories`). The path of the currently opend file will always be used.
+
 ## Demo
 
 Auto completion and signature help:  
@@ -25,10 +35,6 @@ HLSL Semantics suggestions:
 
 Goto definition:  
 ![Goto definition](doc/goto-def.gif)
-
-## Configurations
-
-You can specifiy the set of predefined preprocessor macros that the language server will use in extension settings. This will help the language server to provide more accurate result.
 
 ## For more information
 
