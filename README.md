@@ -1,13 +1,16 @@
 # Language extension for Slang shading language
 
-This extension provides IDE service for the Slang and HLSL shading languages.
+This is the official Visual Studio Code extension for the Slang shading language. Powered by the Slang shader compiler, this extension provides accurate coding assist for both Slang and HLSL.
+
+Both Slang and this extension are open source projects on GitHub. We welcome feedback and contributions. Please report issues or suggest improvements at https://github.com/shader-slang/slang-vscode-extension/issues
+
 
 ## Features
 
-Features include:
-- Enhanced semantic highlighting: user-defined types, variables, parameters and property will be highlighted.
-- Auto completion: show suggestions of object/type members and HLSL semantics.
-- Function signature help: view function sigatures at callsites.
+This extension provides the following assisting features:
+- Enhanced semantic highlighting: user-defined types, variables, parameters and properties will be highlighted.
+- Code completion: show suggestions of object/type members and HLSL semantics.
+- Function signature help: view function signatures at call sites.
 - Hover information: displays the signature and documentation for the symbol that your mouse is hovering over.
 - Go to definition: jumps to the source location that defines the current symbol.
 - Diagnostics: displays current compilation errors.
@@ -32,4 +35,3 @@ You can specifiy the set of predefined preprocessor macros that the language ser
 * [Slang public repository](http://github.com/shader-slang/slang)
 * [Slang Visual Studio Code Extension repository](https://github.com/shader-slang/slang-vscode-extension)
 
-Please report issues of this extension at https://github.com/shader-slang/slang-vscode-extension/issues

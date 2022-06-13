@@ -26,7 +26,7 @@ jobs:
         # Optional, no need to specify if PR is
         #commit: ${{github.event.pull_request.head.sha}}
         # Optional, will use the branch
-        branch: lsp
+        branch: master
         # Optional, defaults to all types
         #event: push
         # Optional, will use specified workflow run
@@ -56,7 +56,7 @@ jobs:
       uses: dawidd6/action-download-artifact@v2
       with:
         workflow: windows.yml
-        branch: lsp
+        branch: master
         name: slang-build-Release-Win32-
         path: artifacts/
         repo: shader-slang/slang
