@@ -79,6 +79,7 @@ jobs:
         npm install
         npm install -g vsce
         vsce publish -p "$VSCE_TOKEN"
+        vsce package
     - uses: actions/upload-artifact@v3
       with:
         name: slang-vsix
