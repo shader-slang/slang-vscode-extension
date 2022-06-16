@@ -77,7 +77,7 @@ jobs:
         cp ./artifacts/linux-x64/release/slangd ./server/bin/linux-x64/slangd
         chmod +x ./server/bin/linux-x64/slangd
         mkdir -p ./server/bin/darwin
-        unzip slang-macos-dist.zip ./server/bin/darwin/
+        unzip slang-macos-dist.zip -d ./server/bin/darwin/
         ls ./server/bin/darwin/
         chmod +x ./server/bin/darwin/slangd
     - name: Build VSIX package
