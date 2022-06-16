@@ -21,6 +21,10 @@ export function activate(context: ExtensionContext) {
 	{
 		platformDirName = "win-x32";
 	}
+	else if (process.platform == 'darwin')
+	{
+		platformDirName = "darwin"
+	}
 	else
 	{
 		platformDirName = "linux-x64";
