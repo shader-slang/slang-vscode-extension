@@ -68,7 +68,7 @@ jobs:
         file: 'slang-macos-dist.zip'
     - name: Copy Slang binaries
       run: |
-        ls ./artifacts/
+        ls ./
         mkdir -p ./server/bin/win-x32
         cp ./artifacts/windows-x86/release/slang.dll ./server/bin/win-x32/slang.dll
         cp ./artifacts/windows-x86/release/slangd.exe ./server/bin/win-x32/slangd.exe
