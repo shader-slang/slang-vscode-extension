@@ -1,5 +1,12 @@
 # Change Log
 
+## v1.2.0
+- Supports document symbol outline feature.
+- Add MacOS support.
+- Fixed highlighting of `extension` decl's target type.
+- Add missing highlight for several HLSL keywords.
+- Stability fixes.
+
 ## v1.1.2
 - Add configuration for search paths.
 - Fix highlighting bug.
