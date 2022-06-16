@@ -13,6 +13,7 @@ This extension provides the following assisting features:
 - Function signature help: view function signatures at call sites.
 - Hover information: displays the signature and documentation for the symbol that your mouse is hovering over.
 - Go to definition: jumps to the source location that defines the current symbol.
+- Document symbol: displays the outline of symbols defined in current document.
 - Diagnostics: displays current compilation errors.
 
 ## Configurations
