@@ -91,6 +91,7 @@ jobs:
     - name: UploadSource
       uses: softprops/action-gh-release@v1
       with:
-        files: *.vsix
+        files: |
+          *.vsix
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
