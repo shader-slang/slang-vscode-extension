@@ -23,7 +23,7 @@ jobs:
         # Required, workflow file name or ID
         workflow: linux.yml
         # Optional, will get head commit SHA
-        pr: 2269
+        #pr: 2269
         # Optional, no need to specify if PR is
         #commit: ${{github.event.pull_request.head.sha}}
         # Optional, will use the branch
@@ -88,8 +88,9 @@ jobs:
         npm install -g vsce
         vsce publish -p "$VSCE_TOKEN"
         vsce package
-    - uses: actions/upload-artifact@v3
+    - name: UploadSource
+      uses: softprops/action-gh-release@v1
       with:
-        name: slang-vsix
-        path: |
-          *.vsix
+        files: *.vsix
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
