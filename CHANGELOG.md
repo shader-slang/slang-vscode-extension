@@ -1,4 +1,11 @@
 # Change Log
+## v1.2.1
+- Auto completion now provides suggestions for general types, expressions and bracket attributes in addition to members.
+- Add configuration to turn on/off commit characters for auto completion.
+- Support highlighting macro invocations.
+- Support hover info for macro invocations.
+- Support goto definition for #include and import.
+- Performance improvements. Reduces auto completion/semantic highlighting reponse time by 50%.
 
 ## v1.2.0
 - Supports document symbol outline feature.

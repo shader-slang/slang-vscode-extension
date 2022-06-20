@@ -8,8 +8,8 @@ Both Slang and this extension are open source projects on GitHub. We welcome fee
 ## Features
 
 This extension provides the following assisting features:
-- Enhanced semantic highlighting: user-defined types, variables, parameters and properties will be highlighted.
-- Code completion: show suggestions of object/type members and HLSL semantics.
+- Enhanced semantic highlighting: user-defined types, variables, parameters, properties and macros will be highlighted.
+- Code completion: show context-aware suggestions of variables, functions, types, members, keywords, attributes and HLSL semantics.
 - Function signature help: view function signatures at call sites.
 - Hover information: displays the signature and documentation for the symbol that your mouse is hovering over.
 - Go to definition: jumps to the source location that defines the current symbol.
@@ -26,13 +26,14 @@ You can specifiy the set of predefined preprocessor macros that the language ser
 
 By default, the extension will search for all sub directories in the current workspace for an included or imported file. You can specify additional search paths via the `slang.additionalSearchPaths` setting, which will be looked at first. You can also disable the search in workspace directories and make the extension to search only in configured search paths (via `slang.searchInAllWorkspaceDirectories`). The path of the currently opend file will always be used.
 
+### Commit characters for auto completion
+
+Select whether or not to use commit characters to select an auto completion item in addition to pressing the enter key. You can enable commit characters for member completion only or for all types of completion suggestions.
+
 ## Demo
 
 Auto completion and signature help:  
-![Auto completion and signature help](doc/member-completion.gif)
-
-HLSL Semantics suggestions:  
-![](doc/hlsl-semantic-completion.gif)
+![Auto completion and signature help](doc/auto-complete.gif)
 
 Goto definition:  
 ![Goto definition](doc/goto-def.gif)
