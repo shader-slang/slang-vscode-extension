@@ -38,8 +38,9 @@ jobs:
       run: |
         ls ./
         mkdir -p ./bin
-        export WIN32ZIP=slang-${{ steps.download-win32.outputs.version}}-win32.zip
-        export LINUX64ZIP=slang-${{ steps.download-linux64.outputs.version}}-linux-x86_64.zip
+        export TAGNAME=${{ steps.download-win32.outputs.version}}
+        export WIN32ZIP=slang-${TAGNAME:1}-win32.zip
+        export LINUX64ZIP=slang-${TAGNAME:1}-linux-x86_64.zip
         echo "extracting $WIN32ZIP"
         unzip -n $WIN32ZIP -d ./bin
         echo "extracting $LINUX64ZIP"
