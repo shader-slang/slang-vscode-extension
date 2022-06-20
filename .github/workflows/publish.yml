@@ -19,6 +19,7 @@ jobs:
       with:
         repo: shader-slang/slang
         file: 'slang-.*-win32\.zip'
+        target: "./"
         regex: true
     - name: Download artifact - linux64
       id: download-linux64
@@ -26,8 +27,8 @@ jobs:
       with:
         repo: shader-slang/slang
         file: 'slang-.*-linux-x86_64\.zip'
+        target: "./"
         regex: true
-    
     - name: Download artifact - macos
       uses: dsaltares/fetch-gh-release-asset@master
       with:
@@ -37,8 +38,9 @@ jobs:
       run: |
         ls ./
         mkdir -p ./bin
-        export WIN32ZIP=slang-${{ steps.download-win32.outputs.version}}-win32.zip
-        export LINUX64ZIP=slang-${{ steps.download-linux64.outputs.version}}-linux-x86_64.zip
+        export TAGNAME=${{ steps.download-win32.outputs.version}}
+        export WIN32ZIP=slang-${TAGNAME:1}-win32.zip
+        export LINUX64ZIP=slang-${TAGNAME:1}-linux-x86_64.zip
         echo "extracting $WIN32ZIP"
         unzip -n $WIN32ZIP -d ./bin
         echo "extracting $LINUX64ZIP"
@@ -54,6 +56,8 @@ jobs:
         mkdir -p ./server/bin/darwin
         unzip slang-macos-dist.zip -d ./server/bin/darwin/
         chmod +x ./server/bin/darwin/slangd
+
+        rm -rf ./bin
     - name: Publish VSIX package
       env:
         VSCE_TOKEN: ${{ secrets.VS_MARKETPLACE_TOKEN }}
