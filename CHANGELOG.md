@@ -1,5 +1,5 @@
 # Change Log
-## v1.2.1
+## v1.2.2
 - Auto completion now provides suggestions for general types, expressions and bracket attributes in addition to members.
 - Add configuration to turn on/off commit characters for auto completion.
 - Support highlighting macro invocations.
