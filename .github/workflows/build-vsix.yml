@@ -18,7 +18,7 @@ jobs:
       with:
         repo: shader-slang/slang
         file: 'slang-.*-win32\.zip'
-        target: "slang-win32.zip"
+        target: "./"
         regex: true
     - name: Download artifact - linux64
       id: download-linux64
@@ -26,7 +26,7 @@ jobs:
       with:
         repo: shader-slang/slang
         file: 'slang-.*-linux-x86_64\.zip'
-        target: "slang-linux64.zip"
+        target: "./"
         regex: true
     
     - name: Download artifact - macos
