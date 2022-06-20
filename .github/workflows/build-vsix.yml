@@ -12,55 +12,21 @@ jobs:
       with:
         submodules: 'true'
         fetch-depth: '0'
-    - name: Download artifact - linux x64
-      uses: dawidd6/action-download-artifact@v2
+    - name: Download artifact - win32
+      id: download-win32
+      uses: dsaltares/fetch-gh-release-asset@master
       with:
-        # Optional, GitHub token, a Personal Access Token with `public_repo` scope if needed
-        # Required, if artifact is from a different repo
-        # Required, if repo is private a Personal Access Token with `repo` scope is needed
-        #github_token: ${{secrets.GITHUB_TOKEN}}
-        # Required, workflow file name or ID
-        workflow: linux.yml
-        # Optional, will get head commit SHA
-        #pr: 2269
-        # Optional, no need to specify if PR is
-        #commit: ${{github.event.pull_request.head.sha}}
-        # Optional, will use the branch
-        branch: master
-        # Optional, defaults to all types
-        #event: push
-        # Optional, will use specified workflow run
-        #run_id: 1122334455
-        # Optional, run number from the workflow
-        #run_number: 34
-        # Optional, uploaded artifact name,
-        # will download all artifacts if not specified
-        # and extract them in respective subdirectories
-        # https://github.com/actions/download-artifact#download-all-artifacts
-        name: slang-build-release-x64-gcc
-        # Optional, directory where to extract artifact(s), defaults to current directory
-        path: artifacts/
-        # Optional, defaults to current repo
         repo: shader-slang/slang
-        # Optional, check the workflow run whether it has an artifact
-        # then will get the last available artifact from previous workflow
-        # default false, just try to download from the last one
-        #check_artifacts:  false
-        # Optional, search for the last workflow run whose stored an artifact named as in `name` input
-        # default false
-        search_artifacts: true
-        # Optional, choose to skip unpacking the downloaded artifact(s)
-        # default false
-        #skip_unpack: false
-    - name: Download artifact - win x32
-      uses: dawidd6/action-download-artifact@v2
+        file: 'slang-*-win32\.zip'
+        regex: true
+    - name: Download artifact - linux64
+      id: download-linux64
+      uses: dsaltares/fetch-gh-release-asset@master
       with:
-        workflow: windows.yml
-        branch: master
-        name: slang-build-Release-Win32-
-        path: artifacts/
         repo: shader-slang/slang
-        search_artifacts: true
+        file: 'slang-*-linux-x86_64\.zip'
+        regex: true
+    
     - name: Download artifact - macos
       uses: dsaltares/fetch-gh-release-asset@master
       with:
@@ -69,16 +35,23 @@ jobs:
     - name: Copy Slang binaries
       run: |
         ls ./
+        mkdir -p ./bin
+        export WIN32ZIP=slang-${{ steps.download-win32.outputs.version}}-win32.zip
+        export LINUX64ZIP=slang-${{ steps.download-linux64.outputs.version}}-linux-x86_64.zip
+        echo "extracting $WIN32ZIP"
+        unzip -n $WIN32ZIP -d ./bin
+        echo "extracting $LINUX64ZIP"
+        unzip -n $LINUX64ZIP -d ./bin
+
         mkdir -p ./server/bin/win-x32
-        cp ./artifacts/windows-x86/release/slang.dll ./server/bin/win-x32/slang.dll
-        cp ./artifacts/windows-x86/release/slangd.exe ./server/bin/win-x32/slangd.exe
+        cp ./bin/bin/windows-x86/release/slang.dll ./server/bin/win-x32/slang.dll
+        cp ./bin/bin/windows-x86/release/slangd.exe ./server/bin/win-x32/slangd.exe
         mkdir -p ./server/bin/linux-x64
-        cp ./artifacts/linux-x64/release/libslang.so ./server/bin/linux-x64/libslang.so
-        cp ./artifacts/linux-x64/release/slangd ./server/bin/linux-x64/slangd
+        cp ./bin/bin/linux-x64/release/libslang.so ./server/bin/linux-x64/libslang.so
+        cp ./bin/bin/linux-x64/release/slangd ./server/bin/linux-x64/slangd
         chmod +x ./server/bin/linux-x64/slangd
         mkdir -p ./server/bin/darwin
         unzip slang-macos-dist.zip -d ./server/bin/darwin/
-        ls ./server/bin/darwin/
         chmod +x ./server/bin/darwin/slangd
     - name: Build VSIX package
       run: |
