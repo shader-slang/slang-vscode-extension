@@ -6,7 +6,7 @@ artifacts/
 src/
 out/
 client/
-bin/bin/
+tmp/
 !client/out/main.js
 tsconfig.json
 webpack.config.js
