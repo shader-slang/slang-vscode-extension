@@ -15,5 +15,6 @@ vsc-extension-quickstart.md
 *.vsix
 *.map
 *.md
+*.sh
 !CHANGELOG.md
 !README.md
