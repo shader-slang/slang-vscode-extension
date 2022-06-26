@@ -41,7 +41,7 @@ export function activate(context: ExtensionContext) {
 	// Options to control the language client
 	const clientOptions: LanguageClientOptions = {
 		// Register the server for plain text documents
-		documentSelector: [{ scheme: 'file', language: 'slang' }]
+		documentSelector: [{ scheme: 'file', language: 'slang' }],
 	};
 
 	// Create the language client and start the client.
@@ -51,7 +51,6 @@ export function activate(context: ExtensionContext) {
 		serverOptions,
 		clientOptions
 	);
-
 	// Start the client. This will also launch the server
 	client.start();
 }

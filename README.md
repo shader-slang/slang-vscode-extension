@@ -14,6 +14,7 @@ This extension provides the following assisting features:
 - Hover information: displays the signature and documentation for the symbol that your mouse is hovering over.
 - Go to definition: jumps to the source location that defines the current symbol.
 - Document symbol: displays the outline of symbols defined in current document.
+- Inlay hint: shows inline hints for parameter names and deduced types.
 - Diagnostics: displays current compilation errors.
 
 ## Configurations
