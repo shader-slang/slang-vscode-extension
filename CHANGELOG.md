@@ -1,4 +1,8 @@
 # Change Log
+## v1.3.1
+- Fine tuned completion and auto formatting experience to prevent them from triggering on unexpected situations.
+- Fixed clang-format discovering logic on Linux.
+
 ## v1.3.0
 - Auto formatting using clang-format.
 - Inlay hints: show inline hints for parameter names and auto deduced types.

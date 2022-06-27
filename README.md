@@ -15,10 +15,10 @@ This extension provides the following assisting features:
 - Go to definition: jumps to the source location that defines the current symbol.
 - Document symbol: displays the outline of symbols defined in current document.
 - Inlay hint: shows inline hints for parameter names and deduced types.
-- Clang-format based code formatting.
+- Code formatting.
 - Diagnostics: displays current compilation errors.
 
-**Note:** the code formatting feature requires clang-format to be available on your system. The location of clang-format can be configured in the extension settings. By default, the Slang extension will attempt to find clang-format from `PATH`. If that failed, the extension will try to use the clang-format bundled with the C++ extension if it is installed. 
+**Note:** the code formatting feature requires `clang-format` to be available on your system. The location of clang-format can be configured in the extension settings.
 
 ## Configurations
 
@@ -33,6 +33,11 @@ By default, the extension will search for all sub directories in the current wor
 ### Commit characters for auto completion
 
 Select whether or not to use commit characters to select an auto completion item in addition to pressing the enter key. You can enable commit characters for member completion only or for all types of completion suggestions.
+
+### `clang-format` location and style
+The Slang language extension supports auto-formatting with `clang-format`. To use this feature, `clang-format` must be available on your system. By default, the extension will look for `clang-format` in `PATH`. If not found, the extension will try to use the `clang-format` bundled with VSCode C++ extension. If neither options are available, the user must provide the path to `clang-format` via the `slang.format.clangFormatLocation` extension setting.
+
+You can customize the style to use with `clang-format` with the `slang.format.clangFormatStyle` setting.
 
 ## Demo
 
