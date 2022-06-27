@@ -1,5 +1,6 @@
 # Change Log
-## v1.2.3
+## v1.3.0
+- Auto formatting using clang-format.
 - Inlay hints: show inline hints for parameter names and auto deduced types.
 - Fixed a bug where setting predefined macros without a value caused language server to crash.
 

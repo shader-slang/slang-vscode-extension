@@ -15,6 +15,7 @@ This extension provides the following assisting features:
 - Go to definition: jumps to the source location that defines the current symbol.
 - Document symbol: displays the outline of symbols defined in current document.
 - Inlay hint: shows inline hints for parameter names and deduced types.
+- Clang-format based auto formatting.
 - Diagnostics: displays current compilation errors.
 
 ## Configurations
