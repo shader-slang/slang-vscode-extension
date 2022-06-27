@@ -1,4 +1,7 @@
 # Change Log
+## v1.3.2
+- Update default clang-format style setting
+
 ## v1.3.1
 - Fine tuned completion and auto formatting experience to prevent them from triggering on unexpected situations.
 - Fixed clang-format discovering logic on Linux.
