@@ -1,6 +1,11 @@
 # Change Log
+## v1.3.3
+- Fine tuned code completion triggering conditions.
+- Add configurations to turn on/off each individual type of inlay hints.
+- Fixed a regression that caused the commit character configuration to have no effect.
+
 ## v1.3.2
-- Update default clang-format style setting
+- Update default clang-format style setting.
 
 ## v1.3.1
 - Fine tuned completion and auto formatting experience to prevent them from triggering on unexpected situations.
