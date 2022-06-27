@@ -15,8 +15,10 @@ This extension provides the following assisting features:
 - Go to definition: jumps to the source location that defines the current symbol.
 - Document symbol: displays the outline of symbols defined in current document.
 - Inlay hint: shows inline hints for parameter names and deduced types.
-- Clang-format based auto formatting.
+- Clang-format based code formatting.
 - Diagnostics: displays current compilation errors.
+
+**Note:** the code formatting feature requires clang-format to be available on your system. The location of clang-format can be configured in the extension settings. By default, the Slang extension will attempt to find clang-format from `PATH`. If that failed, the extension will try to use the clang-format bundled with the C++ extension if it is installed. 
 
 ## Configurations
 
