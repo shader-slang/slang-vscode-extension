@@ -9,7 +9,8 @@
         "vscode": "^1.67.0"
     },
     "categories": [
-        "Programming Languages"
+        "Programming Languages",
+        "Formatters"
     ],
     "activationEvents": [
         "onLanguage:slang"
@@ -43,7 +44,8 @@
         ],
         "configurationDefaults": {
             "[slang]": {
-                "editor.wordBasedSuggestions": false
+                "editor.wordBasedSuggestions": false,
+                "editor.formatOnType": true
             }
         },
         "grammars": [
@@ -89,6 +91,18 @@
                     ],
                     "default": "membersOnly",
                     "description": "Controls whether or not to enable commit characters for selecting an auto completion item in addition to pressing enter. 'off' - disabled. 'memberOnly' - use commit characters in a member list only. 'on' - use commit characters for all types of completions."
+                },
+                "slang.format.clangFormatLocation": {
+                    "scope": "window",
+                    "type": "string",
+                    "default": "",
+                    "description": "The location of clang-format for auto formatting, including the executable name. If left unspecified, will attempt to find `clang-format` under `PATH`, or under C++ extension installation path."
+                },
+                "slang.format.clangFormatStyle": {
+                    "scope": "window",
+                    "type": "string",
+                    "default": "",
+                    "description": "The `-style` argument to pass to clang-format, without quotes. Examples: `Microsoft`, `LLVM`, `file:fileName`, `{BasedOnStyle: Microsoft, BreakBeforeBraces: Allman}`"
                 },
                 "slangLanguageServer.trace.server": {
                     "scope": "window",
