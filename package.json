@@ -104,6 +104,18 @@
                     "default": "{BasedOnStyle: Microsoft, BreakBeforeBraces: Allman}",
                     "description": "The `-style` argument to pass to clang-format, without quotes. Examples: `Microsoft`, `LLVM`, `file:fileName`, `{BasedOnStyle: Microsoft, BreakBeforeBraces: Allman}`"
                 },
+                "slang.inlayHints.deducedTypes": {
+                    "scope": "window",
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enable inlay hints for duduced decl types, e.g. the deduced type in `var i = 2`"
+                },
+                "slang.inlayHints.parameterNames": {
+                    "scope": "window",
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Enable inlay hints for parameter names at call sites."
+                },
                 "slangLanguageServer.trace.server": {
                     "scope": "window",
                     "type": "string",
