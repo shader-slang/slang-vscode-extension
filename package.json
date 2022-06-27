@@ -101,7 +101,7 @@
                 "slang.format.clangFormatStyle": {
                     "scope": "window",
                     "type": "string",
-                    "default": "",
+                    "default": "{BasedOnStyle: Microsoft, BreakBeforeBraces: Allman}",
                     "description": "The `-style` argument to pass to clang-format, without quotes. Examples: `Microsoft`, `LLVM`, `file:fileName`, `{BasedOnStyle: Microsoft, BreakBeforeBraces: Allman}`"
                 },
                 "slangLanguageServer.trace.server": {
