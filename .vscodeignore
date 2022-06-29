@@ -15,6 +15,6 @@ webpack.config.js
 *.map
 *.md
 *.sh
-*.gif
+**/*.gif
 !CHANGELOG.md
 !README.md
