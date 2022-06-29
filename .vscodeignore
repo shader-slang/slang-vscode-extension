@@ -10,11 +10,11 @@ tmp/
 !client/out/main.js
 tsconfig.json
 webpack.config.js
-vsc-extension-quickstart.md
 *.zip
 *.vsix
 *.map
 *.md
 *.sh
+*.gif
 !CHANGELOG.md
 !README.md
