@@ -9,7 +9,7 @@ Both Slang and this extension are open source projects on GitHub. We welcome fee
 
 This extension provides the following assisting features:
 - Enhanced semantic highlighting: user-defined types, variables, parameters, properties and macros will be highlighted.
-- Code completion: show context-aware suggestions of variables, functions, types, members, keywords, attributes and HLSL semantics.
+- Code completion: show context-aware suggestions of variables, functions, types, members, keywords, attributes, HLSL semantics, and `include`/`import` paths.
 - Function signature help: view function signatures at call sites.
 - Hover information: displays the signature and documentation for the symbol that your mouse is hovering over.
 - Go to definition: jumps to the source location that defines the current symbol.

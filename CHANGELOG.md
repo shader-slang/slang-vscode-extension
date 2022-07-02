@@ -1,4 +1,9 @@
 # Change Log
+## v1.4.0
+- Support auto completion for `include` and `import` paths.
+- Display formatted doxygen comments in hover info.
+- Reduced package size.
+
 ## v1.3.3
 - Fine tuned code completion triggering conditions.
 - Add configurations to turn on/off each individual type of inlay hints.
