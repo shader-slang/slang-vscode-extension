@@ -1,4 +1,10 @@
 # Change Log
+## v1.4.1
+- Prevent "." and "-" from commiting `include` suggestions.
+- Add settings to disallow line-break changes in auto formatting.
+- Format on paste no longer changes lines after the cursor position.
+- Fix auto indentation of after typing `{` following `if`, `while`, and `for`.
+
 ## v1.4.0
 - Support auto completion for `include` and `import` paths.
 - Display formatted doxygen comments in hover info.

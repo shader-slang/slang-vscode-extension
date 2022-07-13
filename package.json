@@ -116,6 +116,19 @@
                     "default": "{BasedOnStyle: Microsoft, BreakBeforeBraces: Allman}",
                     "markdownDescription": "The `-style` argument to pass to clang-format, without quotes. Examples: `Microsoft`, `LLVM`, `file:fileName`. Default value is `{BasedOnStyle: Microsoft, BreakBeforeBraces: Allman}`"
                 },
+                "slang.format.allowLineBreakChangesInOnTypeFormatting":
+                {
+                    "scope": "window",
+                    "type": "boolean",
+                    "default": false,
+                    "markdownDescription": "Controls whether the extension is allowed to make line-break changes when reformatting the code on typing."
+                },
+                "slang.format.allowLineBreakChangesInRangeFormatting": {
+                    "scope": "window",
+                    "type": "boolean",
+                    "default": false,
+                    "markdownDescription": "Controls whether the extension is allowed to make line-break changes when doing range formatting, such as formatting on paste or on command."
+                },
                 "slang.inlayHints.deducedTypes": {
                     "scope": "window",
                     "type": "boolean",

@@ -32,7 +32,7 @@
 	  },
 	  {
 		"name": "keyword.other.additional.slang",
-		"match": "\\b(throws|using|__generic|class|interface|func|associatedtype|public|internal|private|import|export|__exported|groupshared|let|var|property|extension|in|out|inout|ref|namespace|this|cbuffer|tbuffer|uniform|typealias)\\b"
+		"match": "\\b(throws|using|__generic|class|interface|func|associatedtype|public|internal|private|import|export|__exported|groupshared|let|var|property|extension|in|out|inout|ref|namespace|this|cbuffer|tbuffer|uniform|typealias|new|__extern_cpp)\\b"
 	  },
 	  {
 		"match": "\\b(const|extern|register|restrict|static|volatile|inline|nointerpolation|precise|row_major|column_major|snorm|unorm)\\b",
