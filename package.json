@@ -113,8 +113,8 @@
                 "slang.format.clangFormatStyle": {
                     "scope": "window",
                     "type": "string",
-                    "default": "{BasedOnStyle: Microsoft, BreakBeforeBraces: Allman}",
-                    "markdownDescription": "The `-style` argument to pass to clang-format, without quotes. Examples: `Microsoft`, `LLVM`, `file:fileName`. Default value is `{BasedOnStyle: Microsoft, BreakBeforeBraces: Allman}`"
+                    "default": "{BasedOnStyle: Microsoft, BreakBeforeBraces: Allman, ColumnLimit: 0}",
+                    "markdownDescription": "The `-style` argument to pass to clang-format, without quotes. Examples: `Microsoft`, `LLVM`, `file:fileName`. Default value is `{BasedOnStyle: Microsoft, BreakBeforeBraces: Allman, ColumnLimit: 0}`"
                 },
                 "slang.format.allowLineBreakChangesInOnTypeFormatting":
                 {
