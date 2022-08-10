@@ -51,7 +51,7 @@
 		"name": "variable.other.readwrite.static.mac-classic.slang"
 	  },
 	  {
-		"match": "\\b(NULL|true|false|TRUE|FALSE)\\b",
+		"match": "\\b(nullptr|none|true|false)\\b",
 		"name": "constant.language.slang"
 	  },
 	  {
@@ -1568,6 +1568,14 @@
 		  {
 			"match": "(?<![\\w$])(sizeof)(?![\\w$])",
 			"name": "keyword.operator.sizeof.slang"
+		  },
+		  {
+			"match": "(?<![\\w$])(as)(?![\\w$])",
+			"name": "keyword.other.additional.slang"
+		  },
+		  {
+			"match": "(?<![\\w$])(is)(?![\\w$])",
+			"name": "keyword.other.additional.slang"
 		  },
 		  {
 			"match": "--",
