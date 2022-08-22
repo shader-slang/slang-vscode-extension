@@ -1,7 +1,10 @@
 # Change Log
+## v1.4.3
+- Update to Slang v0.24.13, which brings more powerful constant folding.
+
 ## v1.4.2
 - Update default Clang-format style to be more conservative on line-break changes.
-- Update Slang compiler version to v0.24.12 tu support new language features.
+- Update Slang compiler version to v0.24.12 to support new language features.
 
 ## v1.4.1
 - Prevent "." and "-" from commiting `include` suggestions.
