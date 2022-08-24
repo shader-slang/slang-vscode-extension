@@ -1,6 +1,10 @@
 # Change Log
+## v1.4.4
+- Update to Slang v0.24.14 to support constant folding through interfaces.
+
 ## v1.4.3
 - Update to Slang v0.24.13, which brings more powerful constant folding.
+- Allow deleting and retyping "," to trigger function signature info.
 
 ## v1.4.2
 - Update default Clang-format style to be more conservative on line-break changes.
