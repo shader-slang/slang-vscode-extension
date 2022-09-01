@@ -1,4 +1,8 @@
 # Change Log
+## v1.4.5
+- Update to Slang v0.24.15 to support the new builtin interfaces.
+- Add syntax highlighting for `half`.
+
 ## v1.4.4
 - Update to Slang v0.24.14 to support constant folding through interfaces.
 
