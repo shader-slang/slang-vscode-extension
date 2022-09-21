@@ -1,10 +1,14 @@
 # Change Log
+## v1.4.6
+- Update to Slang v0.24.23, which brings support for `intptr_t`, `printf`, raw string literals and partial inference of generic arguments.
+- Add highlighting for raw string literals.
+
 ## v1.4.5
-- Update to Slang v0.24.15 to support the new builtin interfaces.
+- Update to Slang v0.24.15 to support the new builtin interfaces (`IArithmetic`, `IInteger`, `IFloat` etc.)
 - Add syntax highlighting for `half`.
 
 ## v1.4.4
-- Update to Slang v0.24.14 to support constant folding through interfaces.
+- Update to Slang v0.24.14 to support constant folding through interfaces (associated constants).
 
 ## v1.4.3
 - Update to Slang v0.24.13, which brings more powerful constant folding.
