@@ -3,7 +3,7 @@
     "displayName": "Slang Language Extension",
     "description": "Extension for the Slang language",
     "publisher": "shader-slang",
-    "version": "1.4.6",
+    "version": "1.4.7",
     "icon": "icon.png",
     "engines": {
         "vscode": "^1.67.0"
@@ -113,8 +113,14 @@
                 "slang.format.clangFormatStyle": {
                     "scope": "window",
                     "type": "string",
+                    "default": "file",
+                    "markdownDescription": "The `-style` argument to pass to clang-format, without quotes. Examples: `Microsoft`, `LLVM`, `file:fileName`. Default value is `file`"
+                },
+                "slang.format.clangFormatFallbackStyle": {
+                    "scope": "window",
+                    "type": "string",
                     "default": "{BasedOnStyle: Microsoft, BreakBeforeBraces: Allman, ColumnLimit: 0}",
-                    "markdownDescription": "The `-style` argument to pass to clang-format, without quotes. Examples: `Microsoft`, `LLVM`, `file:fileName`. Default value is `{BasedOnStyle: Microsoft, BreakBeforeBraces: Allman, ColumnLimit: 0}`"
+                    "markdownDescription": "The `-fallback-style` argument to pass to clang-format, without quotes. Examples: `Microsoft`, `LLVM`, `file:fileName`. Default value is `{BasedOnStyle: Microsoft, BreakBeforeBraces: Allman, ColumnLimit: 0}`"
                 },
                 "slang.format.allowLineBreakChangesInOnTypeFormatting":
                 {

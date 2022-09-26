@@ -39,6 +39,8 @@ The Slang language extension supports auto-formatting with `clang-format`. To us
 
 You can customize the style to use with `clang-format` with the `slang.format.clangFormatStyle` setting.
 
+You may also configure the `slang.format.clangFormatFallbackStyle` setting to specify the style to use when `slang.format.clangFormatStyle` is set to `file` but a `.clang-format` file is not found.
+
 ## Demo
 
 Auto completion and signature help:  

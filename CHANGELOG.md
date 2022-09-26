@@ -1,4 +1,9 @@
 # Change Log
+## v1.4.7
+- Add `slang.format.clangFormatFallbackStyle` setting that will be used when `style` is `file` but a `.clang-format` file is not found.
+- Changed the default value of `slang.format.clangFormatStyle` to `file`.
+- The default value of `slang.format.clangFormatFallbackStyle` is set to `{BasedOnStyle: Microsoft, BreakBeforeBraces: Allman, ColumnLimit: 0}`.
+
 ## v1.4.6
 - Update to Slang v0.24.23, which brings support for `intptr_t`, `printf`, raw string literals and partial inference of generic arguments.
 - Add highlighting for raw string literals.
