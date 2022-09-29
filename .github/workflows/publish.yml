@@ -21,6 +21,14 @@ jobs:
         file: 'slang-.*-win32\.zip'
         target: "./"
         regex: true
+    - name: Download artifact - win-arm64
+      id: download-win-arm64
+      uses: dsaltares/fetch-gh-release-asset@master
+      with:
+        repo: shader-slang/slang
+        file: 'slang-.*-win-arm64\.zip'
+        target: "./"
+        regex: true
     - name: Download artifact - linux64
       id: download-linux64
       uses: dsaltares/fetch-gh-release-asset@master
@@ -29,20 +37,35 @@ jobs:
         file: 'slang-.*-linux-x86_64\.zip'
         target: "./"
         regex: true
+    
     - name: Download artifact - macos
       uses: dsaltares/fetch-gh-release-asset@master
       with:
         repo: shader-slang/slang
-        file: 'slang-.*-macos-i386\.zip'
+        file: 'slang-.*-macos-x64\.zip'
+        target: "./"
+        regex: true
+    - name: Download artifact - macos-aarch64
+      uses: dsaltares/fetch-gh-release-asset@master
+      with:
+        repo: shader-slang/slang
+        file: 'slang-.*-macos-aarch64\.zip'
         target: "./"
         regex: true
     - name: Copy Slang binaries and Build VSIX
       run: |
         export TAGNAME=${{ steps.download-win32.outputs.version}}
         export WIN32ZIP=slang-${TAGNAME:1}-win32.zip
+        export WINARMZIP=slang-${TAGNAME:1}-win-arm64.zip
         export LINUX64ZIP=slang-${TAGNAME:1}-linux-x86_64.zip
-        export MACOSX64ZIP=slang-${TAGNAME:1}-macos-i386.zip
+        export MACOSX64ZIP=slang-${TAGNAME:1}-macos-x64.zip
+        export MACOSAARCH64ZIP=slang-${TAGNAME:1}-macos-aarch64.zip
         source build-package.sh
+
+        for file in ./*.vsix
+        do
+          echo "Built VSIX: $file"
+        done
     - name: Publish VSIX package
       env:
         VSCE_TOKEN: ${{ secrets.VS_MARKETPLACE_TOKEN }}

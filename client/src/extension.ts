@@ -17,20 +17,26 @@ let client: LanguageClient;
 
 export function activate(context: ExtensionContext) {
 	var platformDirName: string = "win";
+	var arch = process.arch;
 	if (process.platform == 'win32')
 	{
-		platformDirName = "win-x32";
+		platformDirName = "win";
+		if (arch == 'x64')
+			arch = 'x32';
 	}
 	else if (process.platform == 'darwin')
 	{
-		platformDirName = "darwin"
+		platformDirName = "darwin";
+		if (arch != 'arm64')
+			arch = 'x64';
 	}
 	else
 	{
-		platformDirName = "linux-x64";
+		platformDirName = "linux";
+		arch = 'x64';
 	}
 	const serverModule = context.asAbsolutePath(
-		path.join('server', 'bin', platformDirName, 'slangd')
+		path.join('server', 'bin', platformDirName + '-' + arch, 'slangd')
 	);
 	const serverOptions: ServerOptions = {
 		run : { command: serverModule, transport: TransportKind.stdio},

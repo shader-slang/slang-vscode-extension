@@ -1,4 +1,7 @@
 # Change Log
+## v1.5.0
+- Release on Win-ARM64 and MacOS-ARM64.
+
 ## v1.4.7
 - Add `slang.format.clangFormatFallbackStyle` setting that will be used when `style` is `file` but a `.clang-format` file is not found.
 - Changed the default value of `slang.format.clangFormatStyle` to `file`.
