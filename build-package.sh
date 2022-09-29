@@ -19,6 +19,7 @@ cp ./tmp/bin/windows-x86/release/slang.dll ./server/bin/win-x32/slang.dll
 cp ./tmp/bin/windows-x86/release/slangd.exe ./server/bin/win-x32/slangd.exe
 vsce package --target win32-ia32
 
+rm -rf ./server/bin/
 mkdir -p ./server/bin/win-arm64
 cp ./tmp/bin/windows-aarch64/release/slang.dll ./server/bin/win-arm64/slang.dll
 cp ./tmp/bin/windows-aarch64/release/slangd.exe ./server/bin/win-arm64/slangd.exe
