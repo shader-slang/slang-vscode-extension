@@ -1,4 +1,7 @@
 # Change Log
+## v1.5.1
+- Fix a crash when parsing entry-point functions that has type errors in the signature.
+
 ## v1.5.0
 - Release on Win-ARM64 and MacOS-ARM64.
 
