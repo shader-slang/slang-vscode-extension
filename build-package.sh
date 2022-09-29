@@ -9,6 +9,10 @@ echo "extracting $LINUX64ZIP"
 unzip -n $LINUX64ZIP -d ./tmp
 echo "extracting $MACOSX64ZIP"
 unzip -n $MACOSX64ZIP -d ./tmp
+echo "extracting $MACOSAARCH64ZIP"
+unzip -n $MACOSAARCH64ZIP -d ./tmp
+echo "extracting $WINARMZIP"
+unzip -n $WINARMZIP -d ./tmp
 
 mkdir -p ./server/bin/win-x32
 cp ./tmp/bin/windows-x86/release/slang.dll ./server/bin/win-x32/slang.dll
