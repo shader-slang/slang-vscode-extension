@@ -2876,7 +2876,7 @@
 	  "storage_types": {
 		"patterns": [
 		  {
-			"match": "(?-mix:(?<!\\w)(?:unsigned|signed|double|_Bool|short|float|half|long|void|char|bool|int)(?!\\w))",
+			"match": "(?-mix:(?<!\\w)(?:unsigned|signed|double|_Bool|short|float|half|long|void|char|bool|int|uint)(?!\\w))",
 			"name": "storage.type.built-in.primitive.slang"
 		  },
 		  {

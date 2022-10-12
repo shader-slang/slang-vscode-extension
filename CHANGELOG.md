@@ -1,4 +1,8 @@
 # Change Log
+## v1.5.2
+- Update to Slang v0.24.34, which brings support for multi-level `break`.
+- Add missing highlighting for `uint` type.
+
 ## v1.5.1
 - Fix a crash when parsing entry-point functions that has type errors in the signature.
 
