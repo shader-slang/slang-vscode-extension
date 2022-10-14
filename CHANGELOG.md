@@ -1,4 +1,7 @@
 # Change Log
+## v1.5.3
+- Update to Slang v0.24.35, which brings support for `[ForceInline]`.
+
 ## v1.5.2
 - Update to Slang v0.24.34, which brings support for multi-level `break`.
 - Add missing highlighting for `uint` type.
