@@ -1,4 +1,8 @@
 # Change Log
+## v1.5.4
+- Update to Slang v0.24.37, which brings experimental support for auto differentiation.
+- Add `slang.slangdLocation` configuration to allow the extension to use custom built language server.
+
 ## v1.5.3
 - Update to Slang v0.24.35, which brings support for `[ForceInline]`.
 

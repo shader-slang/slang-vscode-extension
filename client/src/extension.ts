@@ -18,26 +18,25 @@ let client: LanguageClient;
 export function activate(context: ExtensionContext) {
 	var platformDirName: string = "win";
 	var arch = process.arch;
-	if (process.platform == 'win32')
-	{
-		platformDirName = "win";
-		if (arch == 'x64')
-			arch = 'x32';
-	}
-	else if (process.platform == 'darwin')
-	{
-		platformDirName = "darwin";
-		if (arch != 'arm64')
+	var slangdLoc: string = workspace.getConfiguration("slang").get("slangdLocation", "");
+	if (slangdLoc == "") {
+		if (process.platform == 'win32') {
+			platformDirName = "win";
+			if (arch == 'x64')
+				arch = 'x32';
+		}
+		else if (process.platform == 'darwin') {
+			platformDirName = "darwin";
+			if (arch != 'arm64')
+				arch = 'x64';
+		}
+		else {
+			platformDirName = "linux";
 			arch = 'x64';
+		}
+		slangdLoc = context.asAbsolutePath(path.join('server', 'bin', platformDirName + '-' + arch, 'slangd'));
 	}
-	else
-	{
-		platformDirName = "linux";
-		arch = 'x64';
-	}
-	const serverModule = context.asAbsolutePath(
-		path.join('server', 'bin', platformDirName + '-' + arch, 'slangd')
-	);
+	const serverModule = slangdLoc;
 	const serverOptions: ServerOptions = {
 		run : { command: serverModule, transport: TransportKind.stdio},
 		debug: {command: serverModule, transport: TransportKind.stdio
