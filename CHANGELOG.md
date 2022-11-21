@@ -1,4 +1,9 @@
 # Change Log
+## v1.5.5
+- Improved parser recovery around unknown function modifiers.
+- Add keyword highlighting for auto-diff feature.
+- Update to Slang v0.24.44
+
 ## v1.5.4
 - Update to Slang v0.24.37, which brings experimental support for auto differentiation.
 - Add `slang.slangdLocation` configuration to allow the extension to use custom built language server.
