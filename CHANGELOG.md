@@ -1,4 +1,7 @@
 # Change Log
+## v1.5.6
+- Update to Slang v0.24.45
+
 ## v1.5.5
 - Improved parser recovery around unknown function modifiers.
 - Add keyword highlighting for auto-diff feature.
