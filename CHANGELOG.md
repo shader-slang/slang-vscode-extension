@@ -1,10 +1,16 @@
 # Change Log
+## v1.5.7
+- Added semantic highlighting for attributes.
+- Changed auto-format behavior to no longer insert space between `{}`.
+- Fixed an highlighting issue for interface-typed values.
+- Update to Slang v0.24.46.
+
 ## v1.5.6
 - Update to Slang v0.24.45
 
 ## v1.5.5
 - Improved parser recovery around unknown function modifiers.
-- Add keyword highlighting for auto-diff feature.
+- Added keyword highlighting for auto-diff feature.
 - Update to Slang v0.24.44
 
 ## v1.5.4
