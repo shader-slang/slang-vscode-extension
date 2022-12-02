@@ -1,4 +1,7 @@
 # Change Log
+## v1.5.8
+- Update to Slang v0.24.47.
+
 ## v1.5.7
 - Added semantic highlighting for attributes.
 - Changed auto-format behavior to no longer insert space between `{}`.
