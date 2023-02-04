@@ -1,5 +1,5 @@
 npm install
-npm install -g vsce
+npm install -g @vscode/vsce
 
 ls ./
 mkdir -p ./tmp
