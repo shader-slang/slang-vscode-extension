@@ -1,4 +1,7 @@
 # Change Log
+## v1.5.11
+- Update to Slang v0.25.0.
+- Fixed a bug that causes hover info and goto definition to stop working when switching between document.
 
 ## v1.5.10
 - Update to Slang v0.24.54.
