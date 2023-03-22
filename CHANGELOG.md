@@ -1,4 +1,11 @@
 # Change Log
+
+## v1.5.13
+- Update to Slang v0.25.3.
+- Fixed an issue where breadcrumb AST nodes can mess up semantic highlighting and hover info.
+
+## v1.5.12
+- Update to Slang v0.25.2.
 ## v1.5.11
 - Update to Slang v0.25.0.
 - Fixed a bug that causes hover info and goto definition to stop working when switching between document.
