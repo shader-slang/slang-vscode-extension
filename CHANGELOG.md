@@ -1,4 +1,7 @@
 # Change Log
+## v1.6.0
+- Update to Slang v0.27.0
+- Added support for new attributes and syntax for authoring PyTorch kernels.
 
 ## v1.5.13
 - Update to Slang v0.25.3.
