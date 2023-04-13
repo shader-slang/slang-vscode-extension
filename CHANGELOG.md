@@ -1,4 +1,8 @@
 # Change Log
+## v1.6.7
+- Update to Slang v0.27.14
+- Fixed a crash when checking incomplete `typealias` declaration.
+
 ## v1.6.6
 - Update to Slang v0.27.9
 
