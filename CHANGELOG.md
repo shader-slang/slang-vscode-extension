@@ -1,4 +1,10 @@
 # Change Log
+
+## v1.6.8
+- Update to Slang v0.27.16
+- Add hover info for attributes.
+- Show variable scope in hover info.
+- Show documentation for builtin decls.
 ## v1.6.7
 - Update to Slang v0.27.14
 - Fixed a crash when checking incomplete `typealias` declaration.
