@@ -1,5 +1,9 @@
 # Change Log
 
+## v1.6.9
+- Update to Slang v0.27.18
+- Improved intellisense for attribute arguments.
+
 ## v1.6.8
 - Update to Slang v0.27.16
 - Add hover info for attributes.
