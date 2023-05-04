@@ -1,6 +1,6 @@
 # Change Log
 
-## v1.6.9
+## v1.6.10
 - Update to Slang v0.27.18
 - Improved intellisense for attribute arguments.
 
