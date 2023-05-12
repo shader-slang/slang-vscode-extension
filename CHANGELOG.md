@@ -1,5 +1,10 @@
 # Change Log
 
+## v1.7.0
+- Update to Slang v0.27.21
+- Fix a crash when checking `for` loops.
+- Add support for finalized autodiff keywords.
+
 ## v1.6.10
 - Update to Slang v0.27.18
 - Improved intellisense for attribute arguments.
