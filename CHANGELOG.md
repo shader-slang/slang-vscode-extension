@@ -1,5 +1,8 @@
 # Change Log
 
+## v1.7.1
+- Update to Slang v0.28.0
+
 ## v1.7.0
 - Update to Slang v0.27.21
 - Fix a crash when checking `for` loops.
