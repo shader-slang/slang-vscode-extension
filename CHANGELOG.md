@@ -1,5 +1,10 @@
 # Change Log
 
+## v1.7.6
+- Update to Slang v2023.3.5
+- Fix a crash during type checking.
+- Fix incorrect highlighting of attribute names with scope qualifiers.
+
 ## v1.7.5
 - Update to Slang v2023.3.4
 
