@@ -1,7 +1,7 @@
 # Change Log
 
-## v1.7.7
-- Update to Slang v2023.3.7
+## v1.7.8
+- Update to Slang v2023.3.6
 - Fixes regressions.
 
 ## v1.7.6
