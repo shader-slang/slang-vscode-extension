@@ -1,5 +1,9 @@
 # Change Log
 
+## v1.7.9
+- Update to Slang v2023.3.7
+- Highlighting `__target_switch`, `__intrinsic_asm`, `spirv_asm` keywords.
+
 ## v1.7.8
 - Update to Slang v2023.3.6
 - Fixes regressions.
