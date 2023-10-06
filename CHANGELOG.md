@@ -1,5 +1,9 @@
 # Change Log
 
+## v1.7.12
+- Update to Slang v2023.3.18
+- Add highlighting support for `spirv_asm`.
+
 ## v1.7.11
 - Update to Slang v2023.3.16
 
