@@ -32,7 +32,7 @@
 	  },
 	  {
 		"name": "keyword.other.additional.slang",
-		"match": "\\b(throws|using|__generic|func|associatedtype|public|internal|private|import|export|__exported|groupshared|let|var|property|extension|in|out|inout|ref|namespace|this|cbuffer|tbuffer|uniform|typealias|new|__extern_cpp|__target_intrinsic|__intrinsic_asm|spirv_asm|__target_switch|(__)?(f|b)wd_diff|__dispatch_kernel|no_diff|__constref)\\b"
+		"match": "\\b(throws|using|__generic|func|associatedtype|public|internal|private|import|export|__exported|groupshared|let|var|property|extension|in|out|inout|ref|namespace|this|cbuffer|tbuffer|uniform|typealias|new|__extern_cpp|__target_intrinsic|__intrinsic_asm|spirv_asm|(__)?(f|b)wd_diff|__dispatch_kernel|no_diff|__constref)\\b"
 	  },
 	  {
 		"match": "\\b(const|extern|register|restrict|static|volatile|inline|nointerpolation|precise|row_major|column_major|snorm|unorm)\\b",
@@ -555,7 +555,7 @@
 		]
 	  },
 	  "c_function_call": {
-		"begin": "(?x)\n(?!(?:while|for|do|if|else|switch|catch|enumerate|return|typeid|alignof|alignas|sizeof|[cr]?iterate|and|and_eq|bitand|bitor|compl|not|not_eq|or|or_eq|typeid|xor|xor_eq|alignof|alignas|(__)?(f|b)wd_diff|__dispatch_kernel|no_diff|__constref|__target_intrinsic|__intrinsic_asm|spirv_asm|__target_switch)\\s*\\()\n(?=\n(?:[A-Za-z_][A-Za-z0-9_]*+|::)++\\s*\\(  # actual name\n|\n(?:(?<=operator)(?:[-*&<>=+!]+|\\(\\)|\\[\\]))\\s*\\(\n)",
+		"begin": "(?x)\n(?!(?:while|for|do|if|else|switch|catch|enumerate|return|typeid|alignof|alignas|sizeof|[cr]?iterate|and|and_eq|bitand|bitor|compl|not|not_eq|or|or_eq|typeid|xor|xor_eq|alignof|alignas|(__)?(f|b)wd_diff|__dispatch_kernel|no_diff|__constref|__target_intrinsic|__intrinsic_asm|spirv_asm)\\s*\\()\n(?=\n(?:[A-Za-z_][A-Za-z0-9_]*+|::)++\\s*\\(  # actual name\n|\n(?:(?<=operator)(?:[-*&<>=+!]+|\\(\\)|\\[\\]))\\s*\\(\n)",
 		"end": "(?<=\\))(?!\\w)",
 		"name": "meta.function-call.slang",
 		"patterns": [
@@ -3252,7 +3252,7 @@
 	  },
 	  "switch_statement": {
 		"name": "meta.block.switch.slang",
-		"begin": "(((?>(?:(?:(?>(?<!\\s)\\s+)|(\\/\\*)((?>(?:[^\\*]|(?>\\*+)[^\\/])*)((?>\\*+)\\/)))+|(?:(?:(?:(?:\\b|(?<=\\W))|(?=\\W))|\\A)|\\Z))))((?<!\\w)switch(?!\\w)))",
+		"begin": "(((?>(?:(?:(?>(?<!\\s)\\s+)|(\\/\\*)((?>(?:[^\\*]|(?>\\*+)[^\\/])*)((?>\\*+)\\/)))+|(?:(?:(?:(?:\\b|(?<=\\W))|(?=\\W))|\\A)|\\Z))))((?<!\\w)switch|__target_switch(?!\\w)))",
 		"beginCaptures": {
 		  "1": {
 			"name": "meta.head.switch.slang"
