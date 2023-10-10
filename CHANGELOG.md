@@ -1,5 +1,8 @@
 # Change Log
 
+## v1.7.14
+- Update to Slang v2023.3.19.
+
 ## v1.7.13
 - Update grammar for `__target_switch`.
 
