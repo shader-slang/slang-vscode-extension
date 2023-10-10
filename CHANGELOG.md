@@ -1,6 +1,6 @@
 # Change Log
 
-## v1.7.14
+## v1.7.15
 - Update to Slang v2023.3.19.
 
 ## v1.7.13
