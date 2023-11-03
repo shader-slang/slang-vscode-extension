@@ -1,4 +1,8 @@
 # Change Log
+
+## v1.7.20
+- Update to Slang v2023.4.6.
+
 ## v1.7.19
 - Switch to x64 on Windows.
 
