@@ -17,7 +17,7 @@ jobs:
       uses: dsaltares/fetch-gh-release-asset@master
       with:
         repo: shader-slang/slang
-        file: 'slang-.*-win32\.zip'
+        file: 'slang-.*-win64\.zip'
         target: "./"
         regex: true
     - name: Download artifact - win-arm64
@@ -54,7 +54,7 @@ jobs:
     - name: Copy Slang binaries and Build VSIX
       run: |
         export TAGNAME=${{ steps.download-win32.outputs.version}}
-        export WIN32ZIP=slang-${TAGNAME:1}-win32.zip
+        export WIN32ZIP=slang-${TAGNAME:1}-win64.zip
         export WINARMZIP=slang-${TAGNAME:1}-win-arm64.zip
         export LINUX64ZIP=slang-${TAGNAME:1}-linux-x86_64.zip
         export MACOSX64ZIP=slang-${TAGNAME:1}-macos-x64.zip

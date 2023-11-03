@@ -14,10 +14,10 @@ unzip -n $MACOSAARCH64ZIP -d ./tmp
 echo "extracting $WINARMZIP"
 unzip -n $WINARMZIP -d ./tmp
 
-mkdir -p ./server/bin/win-x32
-cp ./tmp/bin/windows-x86/release/slang.dll ./server/bin/win-x32/slang.dll
-cp ./tmp/bin/windows-x86/release/slangd.exe ./server/bin/win-x32/slangd.exe
-vsce package --target win32-ia32
+mkdir -p ./server/bin/win-x64
+cp ./tmp/bin/windows-x64/release/slang.dll ./server/bin/win-x64/slang.dll
+cp ./tmp/bin/windows-x64/release/slangd.exe ./server/bin/win-x64/slangd.exe
+vsce package --target win32-x64
 
 rm -rf ./server/bin/
 mkdir -p ./server/bin/win-arm64

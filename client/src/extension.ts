@@ -22,8 +22,6 @@ export function activate(context: ExtensionContext) {
 	if (slangdLoc == "") {
 		if (process.platform == 'win32') {
 			platformDirName = "win";
-			if (arch == 'x64')
-				arch = 'x32';
 		}
 		else if (process.platform == 'darwin') {
 			platformDirName = "darwin";
