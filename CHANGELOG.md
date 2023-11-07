@@ -1,5 +1,10 @@
 # Change Log
 
+## v1.7.21
+- Update to Slang v2023.4.8.
+- Stability fixes.
+- Improves highlighting/hinting support around constructors.
+
 ## v1.7.20
 - Update to Slang v2023.4.6.
 
