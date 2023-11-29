@@ -1,5 +1,9 @@
 # Change Log
 
+## v1.7.22
+- Update to Slang v2023.4.10.
+- Fixes an issue where signature help fails to appear.
+
 ## v1.7.21
 - Update to Slang v2023.4.8.
 - Stability fixes.
