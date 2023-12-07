@@ -1,5 +1,9 @@
 # Change Log
 
+## v1.7.24
+- Update to Slang v2023.5.0.
+- Add support for __include and access control.
+
 ## v1.7.23
 - Update to Slang v2023.4.10.
 - Fixes an issue where signature help fails to appear.
