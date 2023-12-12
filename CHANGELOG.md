@@ -1,5 +1,9 @@
 # Change Log
 
+## v1.7.25
+- Update to Slang v2023.5.1.
+- Namespace and module fixes.
+
 ## v1.7.24
 - Update to Slang v2023.5.0.
 - Add support for __include and access control.
