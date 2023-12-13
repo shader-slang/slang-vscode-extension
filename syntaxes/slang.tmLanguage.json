@@ -2880,8 +2880,13 @@
 			"name": "storage.type.built-in.primitive.slang"
 		  },
 		  {
-			"match": "(?-mix:\\b(enum|struct|union|class|interface)\\b)",
-			"name": "storage.type.$1.slang"
+			  "match": "\\b(namespace|enum|enum\\s+class|struct|class|interface)\\s+([A-Za-z0-9_]+)((\\.|::)([A-Za-z0-9_]+))*",
+			  "captures":{
+				"1": {"name": "keyword.$1.slang" },
+				"2": {"name": "support.type.$1.slang" },
+				"4": {"name": "punctuation.separator.dot-access.slang"},
+				"5": {"name": "support.type.$1.slang" }
+			  }
 		  },
 		  {
 			"name": "meta.asm.slang",

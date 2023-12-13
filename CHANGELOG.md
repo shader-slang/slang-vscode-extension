@@ -1,5 +1,10 @@
 # Change Log
 
+## v1.7.26
+- Update to Slang v2023.5.2.
+- Improve namespace highlighting.
+- Add diagnostic for invalid modifier use.
+
 ## v1.7.25
 - Update to Slang v2023.5.1.
 - Namespace and module fixes.
