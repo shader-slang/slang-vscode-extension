@@ -1,5 +1,8 @@
 # Change Log
 
+## v1.8.0
+- Update to Slang v2023.5.3.
+
 ## v1.7.26
 - Update to Slang v2023.5.2.
 - Improve namespace highlighting.
