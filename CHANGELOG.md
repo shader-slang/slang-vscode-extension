@@ -1,5 +1,9 @@
 # Change Log
 
+## v1.8.1
+- Update to Slang v2023.5.4.
+- Add support for Source Engine shader files.
+
 ## v1.8.0
 - Update to Slang v2023.5.3.
 
