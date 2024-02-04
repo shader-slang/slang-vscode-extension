@@ -1,5 +1,8 @@
 # Change Log
 
+## v1.8.3
+- Correctly highlight half literal suffix.
+
 ## v1.8.2
 - Update to Slang v2024.0.2.
 - Add support for capabilities.
