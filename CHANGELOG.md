@@ -1,5 +1,10 @@
 # Change Log
 
+## v1.8.4
+- Update to Slang v2024.0.5.
+- Pointer support.
+- Type checking fix around generic arrays.
+
 ## v1.8.3
 - Correctly highlight half literal suffix.
 
