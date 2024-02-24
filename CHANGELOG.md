@@ -1,5 +1,9 @@
 # Change Log
 
+## v1.8.5
+- Update to Slang v2024.0.10.
+- Robustness fixes.
+
 ## v1.8.4
 - Update to Slang v2024.0.5.
 - Pointer support.
