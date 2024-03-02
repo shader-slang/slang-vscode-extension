@@ -1,5 +1,9 @@
 # Change Log
 
+## v1.8.6
+- Update to Slang v2024.0.14.
+- Add support for bitfields.
+
 ## v1.8.5
 - Update to Slang v2024.0.10.
 - Robustness fixes.
