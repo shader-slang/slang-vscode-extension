@@ -1,5 +1,9 @@
 # Change Log
 
+## v1.8.7
+- Update to Slang v2024.1.0.
+- Add highlighting for `dynamic_uniform` keyword.
+
 ## v1.8.6
 - Update to Slang v2024.0.14.
 - Add support for bitfields.
