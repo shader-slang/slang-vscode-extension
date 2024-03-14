@@ -1,5 +1,11 @@
 # Change Log
 
+## v1.8.9
+- Update to Slang v2024.1.2.
+- Allow angle-bracket #include path.
+- Support unscoped enum types through the [UnscopedEnum] attribute.
+- Add diagnostic on invalid generic constraint type.
+
 ## v1.8.8
 - Update to Slang v2024.1.1.
 - Fix a compiler crash during constant folding.
