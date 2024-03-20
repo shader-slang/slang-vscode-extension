@@ -1,5 +1,9 @@
 # Change Log
 
+## v1.8.10
+- Update to Slang v2024.1.4
+- Type system fixes.
+
 ## v1.8.9
 - Update to Slang v2024.1.2.
 - Allow angle-bracket #include path.
