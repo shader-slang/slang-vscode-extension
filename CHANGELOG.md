@@ -1,5 +1,9 @@
 # Change Log
 
+## v1.8.12
+- Update to Slang v2024.1.6
+- Fixes some parsing and lookup rules.
+
 ## v1.8.11
 - Update to Slang v2024.1.5
 - Parser fixes.
