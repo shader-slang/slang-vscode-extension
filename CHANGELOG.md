@@ -1,4 +1,7 @@
 # Change Log
+## v1.8.13
+- Update to Slang v2024.1.20.
+- Add syntax support for `if (let x = expr)`.
 
 ## v1.8.12
 - Update to Slang v2024.1.6
