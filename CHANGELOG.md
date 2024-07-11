@@ -1,7 +1,7 @@
 # Change Log
 
 ## v1.8.14
-- Update to Slang v2024.1.27.
+- Update to Slang v2024.1.28.
 - Fix performance regression.
 
 ## v1.8.13
