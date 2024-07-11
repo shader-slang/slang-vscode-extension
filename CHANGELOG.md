@@ -1,4 +1,9 @@
 # Change Log
+
+## v1.8.14
+- Update to Slang v2024.1.27.
+- Fix performance regression.
+
 ## v1.8.13
 - Update to Slang v2024.1.20.
 - Add syntax support for `if (let x = expr)`.
