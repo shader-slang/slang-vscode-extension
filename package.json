@@ -30,9 +30,6 @@
         "url": "https://github.com/shader-slang/slang-vscode-extension"
     },
     "main": "./client/out/main",
-    "files": [
-        "./server/bin"
-    ],
     "contributes": {
         "languages": [
             {
