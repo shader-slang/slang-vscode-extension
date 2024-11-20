@@ -4,7 +4,8 @@ Upstream-Contact:  The Khronos Group, Inc.
 Source: https://github.com/shader-slang/slang-vscode-extension
 
 Files: *
-Copyright: 2024 The Khronos Group, Inc.
+Copyright: 2016, Carnegie Mellon University and NVIDIA Corporation
+           2024 The Khronos Group, Inc.
 License: Apache-2.0 WITH LLVM-exception
 
 Files: client/src/extension.ts 
