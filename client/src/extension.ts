@@ -16,24 +16,12 @@ import {
 let client: LanguageClient;
 
 export function activate(context: ExtensionContext) {
-	var platformDirName: string = "win";
-	var arch = process.arch;
-	var slangdLoc: string = workspace.getConfiguration("slang").get("slangdLocation", "");
-	if (slangdLoc == "") {
-		if (process.platform == 'win32') {
-			platformDirName = "win";
-		}
-		else if (process.platform == 'darwin') {
-			platformDirName = "darwin";
-			if (arch != 'arm64')
-				arch = 'x64';
-		}
-		else {
-			platformDirName = "linux";
-			arch = 'x64';
-		}
-		slangdLoc = context.asAbsolutePath(path.join('server', 'bin', platformDirName + '-' + arch, 'slangd'));
-	}
+	const slangdLoc = workspace.getConfiguration("slang").get(
+		"slangdLocation",
+		context.asAbsolutePath(
+			path.join('server', 'bin', process.platform + '-' + process.arch, 'slangd')
+		)
+	);
 	const serverModule = slangdLoc;
 	const serverOptions: ServerOptions = {
 		run : { command: serverModule, transport: TransportKind.stdio},
