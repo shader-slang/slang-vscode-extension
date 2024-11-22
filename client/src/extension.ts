@@ -16,12 +16,10 @@ import {
 let client: LanguageClient;
 
 export function activate(context: ExtensionContext) {
-	const slangdLoc = workspace.getConfiguration("slang").get(
-		"slangdLocation",
-		context.asAbsolutePath(
-			path.join('server', 'bin', process.platform + '-' + process.arch, 'slangd')
-		)
-	);
+	let slangdLoc = workspace.getConfiguration("slang").get("slangdLocation", "");
+	if (slangdLoc === "") slangdLoc = context.asAbsolutePath(
+		path.join('server', 'bin', process.platform + '-' + process.arch, 'slangd')
+	)
 	const serverModule = slangdLoc;
 	const serverOptions: ServerOptions = {
 		run : { command: serverModule, transport: TransportKind.stdio},
