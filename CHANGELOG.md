@@ -1,7 +1,7 @@
 # Change Log
 
-## v1.9.2
-- Update logo.
+## v1.9.3
+- Update to Slang v2024.17.
 
 ## v1.9.1
 - Update to Slang v2024.16.
