@@ -1,55 +1,33 @@
 npm install
 npm install -g @vscode/vsce
 
-ls ./
-mkdir -p ./tmp
-echo "extracting $WIN32ZIP"
-unzip -n $WIN32ZIP -d ./tmp
-mkdir -p ./server/bin/win-x64
-cp ./tmp/bin/slang.dll ./server/bin/win-x64/slang.dll
-cp ./tmp/bin/slangd.exe ./server/bin/win-x64/slangd.exe
-vsce package --target win32-x64
-rm -rf ./tmp
+target_build() {
+  TEMP_DIR="$(mktemp -d)"
+  ZIP="$1"
+  TARGET="$2"
+  TEMP_LIBRARY="$3"
+  TEMP_EXECUTABLE="$4"
 
-mkdir -p ./tmp
-echo "extracting $WINARMZIP"
-unzip -n $WINARMZIP -d ./tmp
-rm -rf ./server/bin/
-mkdir -p ./server/bin/win-arm64
-cp ./tmp/bin/slang.dll ./server/bin/win-arm64/slang.dll
-cp ./tmp/bin/slangd.exe ./server/bin/win-arm64/slangd.exe
-vsce package --target win32-arm64
-rm -rf ./tmp
+  echo "extracting $ZIP"
+  unzip -n "$ZIP" -d "$TEMP_DIR"
 
-mkdir -p ./tmp
-echo "extracting $LINUX64ZIP"
-unzip -n $LINUX64ZIP -d ./tmp
-rm -rf ./server/bin/
-mkdir -p ./server/bin/linux-x64
-cp ./tmp/lib/libslang.so ./server/bin/linux-x64/libslang.so
-cp ./tmp/bin/slangd ./server/bin/linux-x64/slangd
-chmod +x ./server/bin/linux-x64/slangd
-vsce package --target linux-x64
-rm -rf ./tmp
+  echo "installing binaries for $TARGET"
+  mkdir -p "./server/bin/$TARGET"
+  cp "$TEMP_DIR/$TEMP_LIBRARY" ./server/bin/"$TARGET"/
+  cp "$TEMP_DIR/$TEMP_EXECUTABLE" ./server/bin/"$TARGET"/
+  chmod +x ./server/bin/"$TARGET"/*
 
-mkdir -p ./tmp
-echo "extracting $MACOSX64ZIP"
-unzip -n $MACOSX64ZIP -d ./tmp
-rm -rf ./server/bin/
-mkdir -p ./server/bin/darwin-x64
-cp ./tmp/lib/libslang.dylib ./server/bin/darwin-x64/libslang.dylib
-cp ./tmp/bin/slangd ./server/bin/darwin-x64/slangd
-chmod +x ./server/bin/darwin-x64/slangd
-vsce package --target darwin-x64
-rm -rf ./tmp
+  echo "building for $TARGET"
+  vsce package --target "$TARGET"
 
-mkdir -p ./tmp
-echo "extracting $MACOSAARCH64ZIP"
-unzip -n $MACOSAARCH64ZIP -d ./tmp
-rm -rf ./server/bin/
-mkdir -p ./server/bin/darwin-arm64
-cp ./tmp/lib/libslang.dylib ./server/bin/darwin-arm64/libslang.dylib
-cp ./tmp/bin/slangd ./server/bin/darwin-arm64/slangd
-chmod +x ./server/bin/darwin-arm64/slangd
-vsce package --target darwin-arm64
-rm -rf ./tmp
+  echo "cleanup for $TARGET"
+  rm -rf $TEMP_DIR
+  rm -rf ./server/bin/
+}
+
+target_build "$WIN32_X64_ZIP" win32-x64 bin/slang.dll bin/slangd.exe
+target_build "$WIN32_ARM64_ZIP" win32-arm64 bin/slang.dll bin/slangd.exe
+target_build "$LINUX_X64_ZIP" linux-x64 lib/libslang.so bin/slangd
+target_build "$LINUX_ARM64_ZIP" linux-arm64 lib/libslang.so bin/slangd
+target_build "$DARWIN_X64_ZIP" darwin-x64 lib/libslang.dylib bin/slangd
+target_build "$DARWIN_ARM64_ZIP" darwin-arm64 lib/libslang.dylib bin/slangd
