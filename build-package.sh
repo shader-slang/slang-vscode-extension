@@ -15,7 +15,7 @@ target_build() {
   echo "installing binaries for $TARGET"
   mkdir -p "./server/bin/$TARGET"
   cp "$TEMP_DIR/$TEMP_LIBRARY" ./server/bin/"$TARGET"/
-  cp "$TEMP_DIR/$TEMP_LIBRARY2" ./server/bin/"$TARGET"/
+  cp "$TEMP_DIR/$TEMP_LIBRARY_2" ./server/bin/"$TARGET"/
   cp "$TEMP_DIR/$TEMP_EXECUTABLE" ./server/bin/"$TARGET"/
   chmod +x ./server/bin/"$TARGET"/*
 
