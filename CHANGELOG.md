@@ -1,5 +1,8 @@
 # Change Log
 
+# v1.9.6
+- Update to Slang v2025.4.
+
 # v1.9.5
 - Update to Slang v2025.3.3, with support to `CoopVec` type.
 
