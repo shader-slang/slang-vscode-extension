@@ -2794,7 +2794,7 @@
 		]
 	  },
 	  "probably_a_parameter": {
-		"match": "(?<=(?:[a-zA-Z_0-9] |[&*>\\]\\)]))\\s*([a-zA-Z_]\\w*)\\s*(?=(?:\\[\\]\\s*)?(?:,|\\)))",
+		"match": "(?<=[a-zA-Z_0-9] |[&*>\\]\\)])\\s*([a-zA-Z_]\\w*)\\s*(?=(?:\\[\\]\\s*)?(?:,|\\)))",
 		"captures": {
 		  "1": {
 			"name": "variable.parameter.probably.slang"
@@ -3007,18 +3007,6 @@
 					  }
 					},
 					"patterns": [
-					  {
-						"include": "source.asm"
-					  },
-					  {
-						"include": "source.x86"
-					  },
-					  {
-						"include": "source.x86_64"
-					  },
-					  {
-						"include": "source.arm"
-					  },
 					  {
 						"include": "#backslash_escapes"
 					  },
