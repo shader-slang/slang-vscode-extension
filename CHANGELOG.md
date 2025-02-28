@@ -1,5 +1,8 @@
 # Change Log
 
+# v1.9.9
+- Update to Slang v2025.6.1.
+
 # v1.9.6
 - Update to Slang v2025.4.
 
