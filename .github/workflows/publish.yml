@@ -121,3 +121,25 @@ jobs:
           vsce publish -p "$VSCE_TOKEN" --packagePath "$file"
           echo "Published VSIX: $file"
         done
+
+  publish-openvsx:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+    - uses: actions/cache/restore@v4
+      id: cache
+      with:
+        path: ./*.vsix
+        key: cache-${{ github.run_id }}-${{ github.run_attempt }}
+        fail-on-cache-miss: true
+    - name: Publish VSIX package to Open VSX
+      env:
+        OVSX_TOKEN: ${{ secrets.OPEN_VSX_TOKEN }}
+      run: |
+        npm install -g ovsx
+
+        for file in ./*.vsix
+        do
+          ovsx publish -p "$OVSX_TOKEN" --packagePath "$file"
+          echo "Published VSIX: $file"
+        done
