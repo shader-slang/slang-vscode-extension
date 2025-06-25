@@ -460,6 +460,24 @@
 			"patterns": [
 			  {
 				"include": "#block_innards"
+			  },
+			  {
+				"name": "meta.variable.qualifer",
+				"begin":"(?x) (\\b([a-zA-Z_][a-zA-Z_0-9]*)\\b)\\s*(:)",
+				"beginCaptures": {
+					"1": {
+						"name": "variable.other.slang"
+					},
+					"4": {
+						"name": "punctuation.separator.colon.slang"
+					}
+				},
+				"end": ";",
+				"patterns": [
+					{
+						"include": "#access_qualifier"
+					}
+				]
 			  }
 			]
 		  }
@@ -532,24 +550,6 @@
 		  },
 		  {
 			"include": "$base"
-		  },
-		  {
-			"name": "meta.variable.qualifer",
-			"begin":"(?x) (\\b([a-zA-Z_][a-zA-Z_0-9]*)\\b)\\s*(:)",
-			"beginCaptures": {
-				"1": {
-					"name": "variable.other.slang"
-				},
-				"4": {
-					"name": "punctuation.separator.colon.slang"
-				}
-			},
-			"end": ";",
-			"patterns": [
-				{
-					"include": "#access_qualifier"
-				}
-			]
 		  }
 		]
 	  },
