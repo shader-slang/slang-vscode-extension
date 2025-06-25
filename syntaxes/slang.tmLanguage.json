@@ -3369,7 +3369,7 @@
 	  },
       "shader_stages": {
 		"match": "\\b(vertex|fragment|compute|hull|domain|geometry|raygen|intersection|anyhit|closesthit|miss|mesh|amplification|callable)\\b",
-		"name": "constant.other.shader_stages"
+		"name": "variable.other.constant.shader_stage"
 	  },
 	  "access_qualifier": {
 		"name": "meta.variable.qualifer.access_qualifier",
