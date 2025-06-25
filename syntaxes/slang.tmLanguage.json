@@ -534,23 +534,23 @@
 			"include": "$base"
 		  },
 		  {
-			"name": "meta.variable.qualifer",
-			"begin":"(?x) (\\b([a-zA-Z_][a-zA-Z_0-9]*)\\b)\\s*(:)",
-			"beginCaptures": {
-				"1": {
-					"name": "variable.other.slang"
-				},
-				"4": {
-					"name": "punctuation.separator.colon.slang"
-				}
-			},
-			"end": ";",
-			"patterns": [
-				{
-					"include": "#access_qualifier"
-				}
-			]
-		  }
+            "name": "meta.variable.qualifer",
+            "begin":"(?x) (\\b([a-zA-Z_][a-zA-Z_0-9]*)\\b)\\s*(:)",
+            "beginCaptures": {
+                "1": {
+                    "name": "variable.other.slang"
+                },
+                "4": {
+                    "name": "punctuation.separator.colon.slang"
+                }
+            },
+            "end": ";",
+            "patterns": [
+                {
+                    "include": "#access_qualifier"
+                }
+            ]
+            }
 		]
 	  },
 	  "c_conditional_context": {
@@ -3375,27 +3375,27 @@
 		"name": "meta.variable.qualifer.access_qualifier",
 		"match": "(?x) (:)? \\s* \\b(read|write)\\b \\((([A-z]+)(,\\s*([A-z]+)\\s*)*)?\\)",
 		"captures": {
-			"1": {
-				"name": "punctuation.separator.delimiter.colon.slang"
-			},
-			"2": {
-				"name": "keyword.other.additional.slang"
-			},
-			"3": {
-				"patterns": [
-					{
-						"include":"#shader_stages"
-					}
-				]
-			},
-			"5": {
-				"patterns": [
-					{
-						"include":"#shader_stages"
-					}
-				]
-			}
-		}
+            "1": {
+                "name": "punctuation.separator.delimiter.colon.slang"
+            },
+            "2": {
+                "name": "keyword.other.additional.slang"
+            },
+            "3": {
+                "patterns": [
+                    {
+                        "include":"#shader_stages"
+                    }
+                ]
+            },
+            "5": {
+                "patterns": [
+                    {
+                        "include":"#shader_stages"
+                    }
+                ]
+            }
+        }
 	  }
 	},
 	"name": "Slang"
