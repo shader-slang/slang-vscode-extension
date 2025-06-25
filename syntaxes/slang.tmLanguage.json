@@ -2901,20 +2901,20 @@
 			"name": "storage.type.built-in.primitive.slang"
 		  },
 		  {
-			  "match": "\\b(namespace|enum|enum\\s+class|struct|class|interface)\\s+(\\[.*\\])?\\s*([A-Za-z0-9_]+)((\\.|::)([A-Za-z0-9_]+))*",
-			  "captures":{
-				"1": {"name": "keyword.$1.slang" },
-				"3": {
-					"patterns": [
-						{
-							"include": "meta.bracket.square.access.slang"
-						}
-					]
-				},
-				"4": {"name": "support.type.$1.slang" },
-				"6": {"name": "punctuation.separator.dot-access.slang"},
-				"7": {"name": "support.type.$1.slang" }
-			  }
+			"match": "\\b(namespace|enum|enum\\s+class|struct|class|interface)\\s+(\\[.*\\])?\\s*([A-Za-z0-9_]+)((\\.|::)([A-Za-z0-9_]+))*",
+			"captures":{
+			"1": {"name": "keyword.$1.slang" },
+			"3": {
+				"patterns": [
+					{
+						"include": "meta.bracket.square.access.slang"
+					}
+				]
+			},
+			"4": {"name": "support.type.$1.slang" },
+			"6": {"name": "punctuation.separator.dot-access.slang"},
+			"7": {"name": "support.type.$1.slang" }
+			}
 		  },
 		  {
 			"name": "meta.asm.slang",
@@ -3363,40 +3363,40 @@
 		  }
 		]
 	  },
-		"vararg_ellipses": {
-			"match": "(?<!\\.)\\.\\.\\.(?!\\.)",
-			"name": "punctuation.vararg-ellipses.slang"
-		},
-		"shader_stages": {
-			"match": "\\b(vertex|fragment|compute|hull|domain|geometry|raygen|intersection|anyhit|closesthit|miss|mesh|amplification|callable)\\b",
-			"name": "constant.other.shader_stages"
-		},
-		"access_qualifier": {
-			"name": "meta.variable.qualifer.access_qualifier",
-			"match": "(?x) (:)? \\s* \\b(read|write)\\b \\((([A-z]+)(,\\s*([A-z]+)\\s*)*)?\\)",
-			"captures": {
-				"1": {
-					"name": "punctuation.separator.delimiter.colon.slang"
-				},
-				"2": {
-					"name": "keyword.other.additional.slang"
-				},
-				"3": {
-					"patterns": [
-						{
-							"include":"#shader_stages"
-						}
-					]
-				},
-				"5": {
-					"patterns": [
-						{
-							"include":"#shader_stages"
-						}
-					]
-				}
+	  "vararg_ellipses": {
+		"match": "(?<!\\.)\\.\\.\\.(?!\\.)",
+		"name": "punctuation.vararg-ellipses.slang"
+	  },
+      "shader_stages": {
+		"match": "\\b(vertex|fragment|compute|hull|domain|geometry|raygen|intersection|anyhit|closesthit|miss|mesh|amplification|callable)\\b",
+		"name": "constant.other.shader_stages"
+	  },
+	  "access_qualifier": {
+		"name": "meta.variable.qualifer.access_qualifier",
+		"match": "(?x) (:)? \\s* \\b(read|write)\\b \\((([A-z]+)(,\\s*([A-z]+)\\s*)*)?\\)",
+		"captures": {
+			"1": {
+				"name": "punctuation.separator.delimiter.colon.slang"
+			},
+			"2": {
+				"name": "keyword.other.additional.slang"
+			},
+			"3": {
+				"patterns": [
+					{
+						"include":"#shader_stages"
+					}
+				]
+			},
+			"5": {
+				"patterns": [
+					{
+						"include":"#shader_stages"
+					}
+				]
 			}
 		}
+	  }
 	},
 	"name": "Slang"
   }
