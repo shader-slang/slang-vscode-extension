@@ -463,16 +463,25 @@
 			  },
 			  {
 				"name": "meta.variable.qualifer",
-				"begin":"(?x) (\\b([a-zA-Z_][a-zA-Z_0-9]*)\\b)\\s*(:)",
+				"begin":"(?x) (\\b([a-zA-Z_][a-zA-Z_0-9]*)\\b)\\s*(?=:\\s*(.+))",
 				"beginCaptures": {
 					"1": {
 						"name": "variable.other.slang"
 					},
-					"4": {
-						"name": "punctuation.separator.colon.slang"
+					"3": {
+						"patterns": [
+							{
+								"include": "#access_qualifier"
+							}
+						]
 					}
 				},
 				"end": ";",
+				"endCaptures": {
+					"0": {
+						"name": "punctuation.semicolon.slang"
+					}
+				},
 				"patterns": [
 					{
 						"include": "#access_qualifier"
@@ -3373,7 +3382,7 @@
 	  },
 	  "access_qualifier": {
 		"name": "meta.variable.qualifer.access_qualifier",
-		"match": "(?x) (:)? \\s* \\b(read|write)\\b \\((([A-z]+)(,\\s*([A-z]+)\\s*)*)?\\)",
+		"match": "(?x)(:)\\s*\\b(read|write)\\b \\((([A-z]+)(,\\s*([A-z]+)\\s*)*)?(\\))",
 		"captures": {
 			"1": {
 				"name": "punctuation.separator.delimiter.colon.slang"
