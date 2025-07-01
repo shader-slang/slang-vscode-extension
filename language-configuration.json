@@ -26,8 +26,12 @@
         ["'", "'"]
     ],
     "indentationRules": {
-        "indentNextLinePattern": "^\\s*(if|for|while)\\s*\\(.*\\)\\s*$",
-        "increaseIndentPattern": "^((?!\\/\\/).)*(\\{[^}\"'`]*|\\([^)\"'`]*|\\[[^\\]\"'`]*|case\\s*.*\\s*:)$",
-        "decreaseIndentPattern": "^((?!.*?\\/\\*).*\\*/)?\\s*[\\}\\]].*$"
+        "indentNextLinePattern": "^\\s*(if|for|while|do)\\s*\\(.*\\)\\s*$",
+        "decreaseIndentPattern": {
+			"pattern": "^\\s*[\\}\\]\\)].*$"
+		},
+		"increaseIndentPattern": {
+			"pattern": "^.*(\\{[^}]*|\\([^)]*|\\[[^\\]]*)$"
+		},
     }
 }

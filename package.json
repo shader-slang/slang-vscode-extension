@@ -103,11 +103,17 @@
                     "default": "membersOnly",
                     "markdownDescription": "Controls whether or not to enable commit characters for selecting an auto completion item in addition to pressing enter. 'off' - disabled. 'memberOnly' - use commit characters in a member list only. 'on' - use commit characters for all types of completions."
                 },
+                "slang.format.enableFormatOnType": {
+                    "scope": "window",
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Controls whether or not to format code automatically while typing. Requires clang-format to be discoverable from PATH."
+                },
                 "slang.format.clangFormatLocation": {
                     "scope": "machine-overridable",
                     "type": "string",
                     "default": "",
-                    "markdownDescription": "The location of clang-format for auto formatting, including the executable name. If left unspecified, will attempt to find `clang-format` under `PATH`, or under C++ extension installation path."
+                    "markdownDescription": "The location of clang-format for auto formatting, including the executable name. If left unspecified, will attempt to find `clang-format` under `PATH`, or under the C++ extension installation path."
                 },
                 "slang.slangdLocation": {
                     "scope": "machine-overridable",
