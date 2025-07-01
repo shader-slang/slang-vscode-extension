@@ -1,4 +1,12 @@
 # Change Log
+
+## Unreleased
+
+- Add Slang Playground Featuers
+  - Run shaders
+  - Compile shaders
+  - Get reflection information
+
 # v1.9.12
 - Update to Slang v2025.11.
 

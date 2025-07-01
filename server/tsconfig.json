@@ -1,0 +1,27 @@
+{
+	"compilerOptions": {
+		"target": "es2022",
+		"lib": [
+			"es2022",
+			"WebWorker"
+		],
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"sourceMap": true,
+		"strict": true,
+		"types": [
+			"@webgpu/types",
+			"node"
+		]
+	},
+	"include": [
+		"src",
+		"../media/slang-wasm.d.ts",
+		"../media/slang-wasm.js",
+		"../shared/util.ts"
+	],
+	"exclude": [
+		"node_modules",
+		".vscode-test-web"
+	]
+}

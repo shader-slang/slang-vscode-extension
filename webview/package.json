@@ -1,0 +1,16 @@
+{
+    "name": "devon-slang-playground-extension",
+    "description": "Extension for the Slang Shading Language",
+	"version": "0.0.1",
+	"engines": {
+		"vscode": "^1.85.0"
+	},
+	"dependencies": {
+		"vue": "^3.5.17"
+	},
+	"devDependencies": {
+		"@types/vscode": "^1.85.0",
+		"@vscode/test-web": "^0.0.51",
+		"@webgpu/types": "^0.1.51"
+	}
+}
