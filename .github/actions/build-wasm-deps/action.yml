@@ -58,6 +58,10 @@ runs:
         path: |
           ./spirv-tools.js
           ./spirv-tools.d.ts
+          ./spirv-tools.worker.js
+          ./spirv-tools.worker.d.ts
+          ./spirv-tools.node.js
+          ./spirv-tools.node.d.ts
         key: ${{ hashFiles('key-spirv-tool.txt') }}
 
     - name: slang-wasm build
@@ -92,6 +96,10 @@ runs:
         path: |
           ./spirv-tools.js
           ./spirv-tools.d.ts
+          ./spirv-tools.worker.js
+          ./spirv-tools.worker.d.ts
+          ./spirv-tools.node.js
+          ./spirv-tools.node.d.ts
         key: ${{ hashFiles('key-spirv-tool.txt') }}
 
     - name: Move artifacts

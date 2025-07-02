@@ -37,4 +37,8 @@ jobs:
             ./dependencies/slang-wasm.node.d.ts
             ./dependencies/spirv-tools.js
             ./dependencies/spirv-tools.d.ts
+            ./dependencies/spirv-tools.worker.js
+            ./dependencies/spirv-tools.worker.d.ts
+            ./dependencies/spirv-tools.node.js
+            ./dependencies/spirv-tools.node.d.ts
           compression-level: 1
