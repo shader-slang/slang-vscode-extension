@@ -33,3 +33,19 @@ cp out/web/spirv-tools.js ../
 cp out/web/spirv-tools.d.ts ../
 
 popd
+
+# Also keep the default (web worker) as spirv-tools.js/d.ts for backward compatibility
+cp ../spirv-tools.js ../spirv-tools.worker.js
+cp ../spirv-tools.d.ts ../spirv-tools.worker.d.ts
+
+# --- Build for Node.js ---
+pushd spirv-tools
+# Patch build.sh for Node.js build
+sed -i 's/-s ENVIRONMENT="worker"/-s ENVIRONMENT="node"/' source/wasm/build.sh
+
+bash -x source/wasm/build.sh
+
+# Copy and rename output for node
+cp out/web/spirv-tools.js ../spirv-tools.node.js
+cp out/web/spirv-tools.d.ts ../spirv-tools.node.d.ts
+popd
