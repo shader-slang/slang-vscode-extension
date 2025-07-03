@@ -69,7 +69,7 @@
                 },
                 {
                     "command": "slang.playgroundRun",
-                    "when": "resourceLangId == slang",
+                    "when": "resourceLangId == slang && isPlaygroundFile == true",
                     "group": "navigation@2"
                 },
                 {

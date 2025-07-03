@@ -179,6 +179,23 @@ export async function sharedActivate(context: ExtensionContext, slangHandler: Sl
 			}
 		})
 	);
+
+	vscode.window.onDidChangeActiveTextEditor(editor => {
+		updateContext(editor);
+	});
+
+	vscode.workspace.onDidChangeTextDocument(event => {
+		if (vscode.window.activeTextEditor?.document === event.document) {
+			updateContext(vscode.window.activeTextEditor);
+		}
+	});
+
+	function updateContext(editor: vscode.TextEditor | undefined) {
+		const text = editor?.document.getText() || "";
+		const shouldShow = text.match("void\\s+printMain\\s*\\(") != null || text.match("float4\\s+imageMain\\s*\\(") != null;
+		vscode.commands.executeCommand('setContext', 'isPlaygroundFile', shouldShow);
+	}
+
 	// Register a virtual document content provider for readonly docs
 	const slangVirtualScheme = 'slang-virtual';
 	const virtualDocumentContents = new Map();
