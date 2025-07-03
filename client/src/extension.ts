@@ -3,27 +3,23 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  * ------------------------------------------------------------------------------------------ */
 
-import * as path from 'path';
 import { workspace, ExtensionContext } from 'vscode';
-
 import {
 	LanguageClient,
 	LanguageClientOptions,
 	ServerOptions,
 	TransportKind
 } from 'vscode-languageclient/node';
+import {getSlangdLocation} from './slangd';
+import { SlangSynthesizedCodeProvider } from './synth_doc_provider';
 
 let client: LanguageClient;
 
 export function activate(context: ExtensionContext) {
-	let slangdLoc = workspace.getConfiguration("slang").get("slangdLocation", "");
-	if (slangdLoc === "") slangdLoc = context.asAbsolutePath(
-		path.join('server', 'bin', process.platform + '-' + process.arch, 'slangd')
-	)
-	const serverModule = slangdLoc;
+	const serverModule = getSlangdLocation(context);
 	const serverOptions: ServerOptions = {
 		run : { command: serverModule, transport: TransportKind.stdio},
-		debug: {command: serverModule, transport: TransportKind.stdio
+		debug: {command: serverModule, transport: TransportKind.stdio,
 		//	, args: ["--debug"]
 				}
 	};
@@ -42,6 +38,13 @@ export function activate(context: ExtensionContext) {
 	);
 	// Start the client. This will also launch the server
 	client.start();
+
+	let synthCodeProvider = new SlangSynthesizedCodeProvider();
+	synthCodeProvider.extensionContext = context;
+
+	context.subscriptions.push(
+		workspace.registerTextDocumentContentProvider('slang-synth', synthCodeProvider)
+	);
 }
 
 export function deactivate(): Thenable<void> | undefined {
