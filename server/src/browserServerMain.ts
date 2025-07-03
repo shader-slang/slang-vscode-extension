@@ -5,6 +5,7 @@ import { TextDocument } from 'vscode-languageserver-textdocument';
 
 import createModule from '../../media/slang-wasm.worker.js';
 import type { LanguageServer, MainModule, CompletionContext, DocumentSymbol as WasmDocumentSymbol } from '../../media/slang-wasm.worker';
+import spirvTools from '../../media/spirv-tools.worker.js';
 import type { CompileRequest, EntrypointsRequest, EntrypointsResult, Result, ServerInitializationOptions, Shader } from '../../shared/playgroundInterface';
 import playgroundSource from "./slang/playground.slang";
 import { DiagnosticSeverity } from 'vscode-languageserver';
@@ -303,8 +304,7 @@ connection.onDidCloseTextDocument(async (params) => {
 });
 
 connection.onRequest('slang/compile', async (params: CompileRequest): Promise<Result<Shader>> => {
-    let path = getEmscriptenURI(params.shaderPath, initializationOptions.workspaceUris);
-    return compiler.compile(params.sourceCode, path, params.entrypoint, params.target, params.noWebGPU);
+    return await compiler.compile(params, initializationOptions.workspaceUris, spirvTools);
 });
 
 connection.onRequest('slang/entrypoints', async (params: EntrypointsRequest): Promise<EntrypointsResult> => {

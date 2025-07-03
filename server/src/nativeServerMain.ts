@@ -1,6 +1,7 @@
 
 import createModule from '../../media/slang-wasm.node.js';
 import type { MainModule } from '../../media/slang-wasm.node.js';
+import spirvTools from '../../media/spirv-tools.node.js';
 import type { EntrypointsRequest, ServerInitializationOptions, WorkerRequest } from '../../shared/playgroundInterface.js';
 import playgroundSource from "./slang/playground.slang";
 import { SlangCompiler } from './compiler.js';
@@ -120,8 +121,7 @@ async function DidChangeTextDocument(params: WorkerRequest & { type: 'DidChangeT
 }
 
 async function slangCompile(params: WorkerRequest & { type: 'slang/compile' }) {
-    let path = getEmscriptenURI(params.shaderPath, initializationOptions.workspaceUris);
-    parentPort!.postMessage(compiler.compile(params.sourceCode, path, params.entrypoint, params.target, params.noWebGPU));
+    parentPort!.postMessage(await compiler.compile(params, initializationOptions.workspaceUris, spirvTools));
 }
 
 async function slangEntrypoints(params: EntrypointsRequest) {

@@ -1,7 +1,9 @@
 import { TextDocumentContentChangeEvent } from 'vscode-languageserver';
 
+export type CompileTarget = 'SPIRV' | 'HLSL' | 'GLSL' | 'METAL' | 'WGSL' | 'CUDA';
+
 export type CompileRequest = {
-	target: 'SPIRV' | 'HLSL' | 'GLSL' | 'METAL' | 'WGSL' | 'CUDA',
+	target: CompileTarget,
 	entrypoint: string,
 	sourceCode: string,
 	shaderPath: string,
@@ -238,7 +240,7 @@ type WorkerRequest = {
     sourceCode: string,
     shaderPath: string,
     entrypoint: string,
-    target: string,
+    target: CompileTarget,
     noWebGPU: boolean
 } | {
     type: 'slang/entrypoints',

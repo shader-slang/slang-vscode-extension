@@ -59,7 +59,6 @@ export async function activate(context: ExtensionContext) {
 			sendMessageToWorker({ type: 'slang/compile', ...parameter });
 			return new Promise((resolve, reject) => {
 				worker.once('message', (result: Result<Shader>) => {
-					console.log('Received compile result from worker', result);
 					if (result.succ == true) {
 						resolve(result);
 					} else {

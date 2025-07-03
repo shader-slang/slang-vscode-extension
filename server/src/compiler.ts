@@ -3,11 +3,11 @@ import playgroundSource from "./slang/playground.slang";
 import imageMainSource from "./slang/imageMain.slang";
 import printMainSource from "./slang/printMain.slang";
 import { ACCESS_MAP, getTextureFormat, webgpuFormatfromSlangFormat, RUNNABLE_ENTRY_POINT_NAMES } from "../../shared/util.js";
-import type { HashedStringData, ScalarType, ReflectionParameter, ReflectionJSON, Bindings, RunnableShaderType, ShaderType, Shader, Result } from '../../shared/playgroundInterface.js'
-import spirvTools from '../../media/spirv-tools.js';
-import type { SpirvTools } from '../../media/spirv-tools';
+import type { HashedStringData, ScalarType, ReflectionParameter, ReflectionJSON, Bindings, RunnableShaderType, ShaderType, Shader, Result, CompileRequest, CompileTarget } from '../../shared/playgroundInterface.js'
+import type { SpirvTools } from '../../media/spirv-tools.worker';
+import { getEmscriptenURI } from './lspSharedUtils.js';
 
-export function isWholeProgramTarget(compileTarget: string) {
+export function isWholeProgramTarget(compileTarget: CompileTarget) {
 	return compileTarget == "METAL" || compileTarget == "SPIRV" || compileTarget == "WGSL";
 }
 
@@ -24,7 +24,7 @@ export class SlangCompiler {
 
 	globalSlangSession: GlobalSession | null = null;
 
-	compileTargetMap: { name: string, value: number }[] | null = null;
+	compileTargetMap: { name: CompileTarget, value: number }[] | null = null;
 
 	slangWasmModule: MainModule;
 	diagnosticsMsg;
@@ -61,7 +61,7 @@ export class SlangCompiler {
 		}
 	}
 
-	findCompileTarget(compileTargetStr: string) {
+	findCompileTarget(compileTargetStr: CompileTarget) {
 		if (this.compileTargetMap == null)
 			throw new Error("No compile targets to find");
 		for (let i = 0; i < this.compileTargetMap.length; i++) {
@@ -106,9 +106,9 @@ export class SlangCompiler {
 		}
 	}
 
-    async initSpirvTools() {
+    async initSpirvTools(spirvToolsInitializer: () => Promise<SpirvTools>) {
         if (!this.spirvToolsModule) {
-            this.spirvToolsModule = await spirvTools();
+            this.spirvToolsModule = await spirvToolsInitializer();
         }
     }
 
@@ -384,16 +384,17 @@ export class SlangCompiler {
 		return true;
 	}
 
-	compile(shaderSource: string, shaderPath: string, entryPointName: string, compileTargetStr: string, noWebGPU: boolean): Result<Shader> {
-		let shouldLinkPlaygroundModule = RUNNABLE_ENTRY_POINT_NAMES.some((entry_point) => shaderSource.match(entry_point) != null);
+	async compile(request: CompileRequest, workspaceURIs: string[], spirvToolsInitializer: () => Promise<SpirvTools>): Promise<Result<Shader>> {
+		let shaderPath = getEmscriptenURI(request.shaderPath, workspaceURIs);
+		let shouldLinkPlaygroundModule = RUNNABLE_ENTRY_POINT_NAMES.some((entry_point) => request.sourceCode.match(entry_point) != null);
 
-		const compileTarget = this.findCompileTarget(compileTargetStr);
-		let isWholeProgram = isWholeProgramTarget(compileTargetStr);
+		const compileTarget = this.findCompileTarget(request.target);
+		let isWholeProgram = isWholeProgramTarget(request.target);
 
 		if (!compileTarget) {
 			return {
 				succ: false,
-				message: "unknown compile target: " + compileTargetStr
+				message: "unknown compile target: " + request.sourceCode
 			};
 		}
 
@@ -425,12 +426,12 @@ export class SlangCompiler {
 					};
 				userModuleIndex++;
 			}
-			if (!this.loadModule(slangSession, "user", dir + '/user.slang', shaderSource, components))
+			if (!this.loadModule(slangSession, "user", dir + '/user.slang', request.sourceCode, components))
 				return {
 					succ: false,
 					message: "Unable to load user module"
 				};
-			if (this.addActiveEntryPoints(slangSession, shaderSource, shaderPath, entryPointName, isWholeProgram, components[userModuleIndex], components) == false)
+			if (this.addActiveEntryPoints(slangSession, request.sourceCode, shaderPath, request.entrypoint, isWholeProgram, components[userModuleIndex], components) == false)
 				return {
 					succ: false,
 					message: "Unable to add entry points"
@@ -439,7 +440,8 @@ export class SlangCompiler {
 			let linkedProgram: ComponentType = program.link();
 
 			let outCode: string;
-			if (compileTargetStr == "SPIRV") {
+			if (request.target == "SPIRV") {
+				await this.initSpirvTools(spirvToolsInitializer);
 				const spirvCode = linkedProgram.getTargetCodeBlob(
 					0 /* targetIndex */
 				);
@@ -456,7 +458,7 @@ export class SlangCompiler {
 			let reflectionJson: ReflectionJSON = linkedProgram.getLayout(0)?.toJsonObject();
 			let hashedStrings: HashedStringData = reflectionJson.hashedStrings ? Object.fromEntries(Object.entries(reflectionJson.hashedStrings).map(entry => entry.reverse())) : {};
 
-			let bindings: Bindings = noWebGPU ? {} : this.getResourceBindings(reflectionJson);
+			let bindings: Bindings = request.noWebGPU ? {} : this.getResourceBindings(reflectionJson);
 
 			// remove incorrect uniform bindings
 			let has_uniform_been_binded = false;
