@@ -1,5 +1,5 @@
 import { TextDocumentContentChangeEvent } from 'vscode-languageserver';
-import type { MainModule } from '../../media/slang-wasm.js';
+import type { MainModule } from '../../media/slang-wasm.worker.js';
 
 // Helper to resolve the correct URL for the WASM and JS files
 export function removePrefix(data: string, prefix: string): string {
@@ -54,7 +54,7 @@ function applyIncrementalChange(
 }
 
 export function modifyEmscriptenFile(uri: string, changes: TextDocumentContentChangeEvent[], slangWasmModule: MainModule) {
-	let content = slangWasmModule.FS.readFile(uri).toString();
+	let content = slangWasmModule.FS.readFile(uri, {encoding: 'utf8'}).toString();
 	for (const change of changes) {
 		content = applyIncrementalChange(content, change)
 	}

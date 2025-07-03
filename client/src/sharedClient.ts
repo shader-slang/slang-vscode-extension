@@ -52,7 +52,7 @@ export async function getSlangFilesWithContents(): Promise<{ uri: string, conten
 	for (const uri of files) {
 		try {
 			const document = await vscode.workspace.openTextDocument(uri);
-			results.push({ uri: uri.toString(true), content: document.getText() });
+			results.push({ uri: uri.toString(false), content: document.getText() });
 		} catch (err) {
 			console.error(`Failed to read ${uri.fsPath}:`, err);
 		}
@@ -82,7 +82,7 @@ export async function sharedActivate(context: ExtensionContext, slangHandler: Sl
 				target: "WGSL",
 				entrypoint: shaderType,
 				sourceCode: userSource,
-				shaderPath: window.activeTextEditor.document.uri.toString(true),
+				shaderPath: window.activeTextEditor.document.uri.toString(false),
 				noWebGPU: false,
 			});
 			if (compileResult.succ == false) {
@@ -156,7 +156,6 @@ export async function sharedActivate(context: ExtensionContext, slangHandler: Sl
 				);
 				uniform_panel.webview.html = getWebviewContent(context, uniform_panel, "client/dist/uniformWebviewBundle.js", "client/dist/uniformWebviewBundle.css");
 				uniform_panel.webview.onDidReceiveMessage(uniform_message => {
-					console.log("uniform update:", uniform_message)
 					if (uniform_message.type === 'update') {
 						let playground_message: PlaygroundMessage = {
 							type: "uniformUpdate",
@@ -206,7 +205,7 @@ export async function sharedActivate(context: ExtensionContext, slangHandler: Sl
 			// Send the picked option to the server and get the result
 			const parameter: EntrypointsRequest = {
 				sourceCode: userSource,
-				shaderPath: window.activeTextEditor.document.uri.toString(true),
+				shaderPath: window.activeTextEditor.document.uri.toString(false),
 			}
 			let entrypoints: EntrypointsResult = await slangHandler.entrypoints(parameter);
 			const entrypointSelection = await window.showQuickPick(entrypoints, {
@@ -222,7 +221,7 @@ export async function sharedActivate(context: ExtensionContext, slangHandler: Sl
 			target: targetSelection,
 			entrypoint: selectedEntrypoint,
 			sourceCode: userSource,
-			shaderPath: window.activeTextEditor.document.uri.toString(true),
+			shaderPath: window.activeTextEditor.document.uri.toString(false),
 			noWebGPU: true,
 		});
 		if (compilationResult.succ == false) {
@@ -247,7 +246,7 @@ export async function sharedActivate(context: ExtensionContext, slangHandler: Sl
 			target: "WGSL",
 			entrypoint: "",
 			sourceCode: userSource,
-			shaderPath: window.activeTextEditor.document.uri.toString(true),
+			shaderPath: window.activeTextEditor.document.uri.toString(false),
 			noWebGPU: true,
 		});
 		if (compilationResult.succ == false) {

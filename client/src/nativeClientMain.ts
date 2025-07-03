@@ -15,6 +15,43 @@ import { CompileRequest, EntrypointsRequest, EntrypointsResult, Result, ServerIn
 let client: LanguageClient;
 let worker: Worker;
 
+
+function sendDidOpenTextDocument(document: vscode.TextDocument) {
+	if (document.languageId !== 'slang') return;
+	sendMessageToWorker({
+		type: 'DidOpenTextDocument',
+		textDocument: {
+			uri: document.uri.toString(),
+			text: document.getText(),
+		}
+	});
+}
+
+
+function sendDidChangeTextDocument(event: vscode.TextDocumentChangeEvent) {
+	const document = event.document;
+	if (document.languageId !== 'slang') return;
+	sendMessageToWorker({
+		type: 'DidChangeTextDocument',
+		textDocument: {
+			uri: document.uri.toString(),
+		},
+		contentChanges: event.contentChanges.map(change => ({
+			range: {
+				start: {
+					character: change.range.start.character,
+					line: change.range.start.line,
+				},
+				end: {
+					character: change.range.end.character,
+					line: change.range.end.line,
+				},
+			},
+			text: change.text
+		}))
+	});
+}
+
 export async function activate(context: ExtensionContext) {
 	let slangdLoc = workspace.getConfiguration("slang").get("slangdLocation", "");
 	if (slangdLoc === "") slangdLoc = context.asAbsolutePath(
@@ -53,6 +90,12 @@ export async function activate(context: ExtensionContext) {
 		workerData: initializationOptions
 	});
 	sendMessageToWorker({ type: 'Initialize', initializationOptions: initializationOptions });
+
+	// Listen for document open/change events
+	context.subscriptions.push(
+		vscode.workspace.onDidOpenTextDocument(sendDidOpenTextDocument),
+		vscode.workspace.onDidChangeTextDocument(sendDidChangeTextDocument)
+	);
 
 	sharedActivate(context, {
 		compileShader: function (parameter: CompileRequest): Promise<Result<Shader>> {

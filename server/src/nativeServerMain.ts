@@ -74,7 +74,6 @@ parentPort!.on("message", async (params: WorkerRequest) => {
 });
 
 async function initialize(params: WorkerRequest & { type: 'Initialize' }) {
-    console.log("Initializing Slang language server in worker thread");
     // Accept extensionUri from initializationOptions
     if (params.initializationOptions) {
         initializationOptions = params.initializationOptions;
