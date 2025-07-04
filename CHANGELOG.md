@@ -6,6 +6,16 @@
   - Run shaders
   - Compile shaders
   - Get reflection information
+- Added browser support
+
+# v1.10.0
+- Fixes highlighting, hover, and signature info for constructor calls.
+- Signature help now automatically selects the best candidate.
+- Go-to-definition can now display core module source.
+- Adds a new setting to turn on/off format-on-type.
+- Auto completion now supports completing implementing method signatures after typing `override`.
+- Fixes highlighting/hover for associated type declref exprs
+- Fix various decl signature printing.
 
 # v1.9.12
 - Update to Slang v2025.11.

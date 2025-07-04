@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
-import { workspace, ExtensionContext, Uri } from 'vscode';
+import { ExtensionContext, workspace } from 'vscode';
 
 import {
 	LanguageClient,
@@ -11,6 +11,8 @@ import {
 import { getSlangFilesWithContents, sharedActivate } from './sharedClient';
 import { Worker } from 'worker_threads';
 import { CompileRequest, EntrypointsRequest, EntrypointsResult, Result, ServerInitializationOptions, Shader, WorkerRequest } from '../../shared/playgroundInterface';
+import {getSlangdLocation} from './slangd';
+import { SlangSynthesizedCodeProvider } from './synth_doc_provider';
 
 let client: LanguageClient;
 let worker: Worker;
@@ -53,15 +55,11 @@ function sendDidChangeTextDocument(event: vscode.TextDocumentChangeEvent) {
 }
 
 export async function activate(context: ExtensionContext) {
-	let slangdLoc = workspace.getConfiguration("slang").get("slangdLocation", "");
-	if (slangdLoc === "") slangdLoc = context.asAbsolutePath(
-		path.join('server', 'bin', process.platform + '-' + process.arch, 'slangd')
-	)
-	const serverModule = slangdLoc;
+	const serverModule = getSlangdLocation(context);
 	const serverOptions: ServerOptions = {
 		run: { command: serverModule, transport: TransportKind.stdio },
 		debug: {
-			command: serverModule, transport: TransportKind.stdio
+			command: serverModule, transport: TransportKind.stdio,
 			//	, args: ["--debug"]
 		}
 	};
@@ -80,6 +78,13 @@ export async function activate(context: ExtensionContext) {
 	);
 	// Start the client. This will also launch the server
 	client.start();
+
+	let synthCodeProvider = new SlangSynthesizedCodeProvider();
+	synthCodeProvider.extensionContext = context;
+
+	context.subscriptions.push(
+		workspace.registerTextDocumentContentProvider('slang-synth', synthCodeProvider)
+	);
 
 	const initializationOptions: ServerInitializationOptions = {
 		extensionUri: context.extensionUri.toString(true),
