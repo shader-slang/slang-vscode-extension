@@ -1,9 +1,8 @@
-name: Publish VSIX - GitHub
+name: Build VSIX
 
 on:
   push:
-    tags:
-    - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+    branches: [ main ]
 
 jobs:
   build:
@@ -80,70 +79,8 @@ jobs:
         do
           echo "Built VSIX: $file"
         done
-    - uses: actions/cache/save@v4
-      id: cache
+    - uses: actions/upload-artifact@v4
       with:
-        path: ./*.vsix
-        key: cache-${{ github.run_id }}-${{ github.run_attempt }}
-
-  publish-github:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-    - uses: actions/cache/restore@v4
-      id: cache
-      with:
-        path: ./*.vsix
-        key: cache-${{ github.run_id }}-${{ github.run_attempt }}
-        fail-on-cache-miss: true
-    - name: UploadSource
-      uses: softprops/action-gh-release@v1
-      with:
-        files: |
+        name: slang-vsix
+        path: |
           *.vsix
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  publish-vscode:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-    - uses: actions/cache/restore@v4
-      id: cache
-      with:
-        path: ./*.vsix
-        key: cache-${{ github.run_id }}-${{ github.run_attempt }}
-        fail-on-cache-miss: true
-    - name: Publish VSIX package to Visual Studio Marketplace
-      env:
-        VSCE_TOKEN: ${{ secrets.VS_MARKETPLACE_TOKEN }}
-      run: |
-        npm install -g @vscode/vsce
-
-        for file in ./*.vsix
-        do
-          vsce publish -p "$VSCE_TOKEN" --packagePath "$file"
-          echo "Published VSIX: $file"
-        done
-
-  publish-openvsx:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-    - uses: actions/cache/restore@v4
-      id: cache
-      with:
-        path: ./*.vsix
-        key: cache-${{ github.run_id }}-${{ github.run_attempt }}
-        fail-on-cache-miss: true
-    - name: Publish VSIX package to Open VSX
-      env:
-        OVSX_TOKEN: ${{ secrets.OPEN_VSX_TOKEN }}
-      run: |
-        npm install -g ovsx
-
-        for file in ./*.vsix
-        do
-          ovsx publish -p "$OVSX_TOKEN" --packagePath "$file"
-          echo "Published VSIX: $file"
-        done
