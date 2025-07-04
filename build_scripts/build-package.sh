@@ -31,6 +31,7 @@ target_build() {
 echo "updating .vscodeignore for native builds"
 cp .vscodeignore .vscodeignore.bak
 # Exclude web files for native builds
+echo '' >> .vscodeignore
 echo 'media/*.worker.js' >> .vscodeignore
 echo 'server/dist/browserServerMain.js' >> .vscodeignore
 
@@ -48,6 +49,7 @@ mv .vscodeignore.bak .vscodeignore
 echo "updating .vscodeignore for web build"
 cp .vscodeignore .vscodeignore.bak
 # Exclude native/server files for web build
+echo '' >> .vscodeignore
 echo 'media/*.node.js' >> .vscodeignore
 echo 'server/dist/nativeServerMain.js' >> .vscodeignore
 
