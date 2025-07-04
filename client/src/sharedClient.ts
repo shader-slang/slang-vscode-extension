@@ -280,7 +280,7 @@ export async function sharedActivate(context: ExtensionContext, slangHandler: Sl
 		const vdocUri = Uri.parse(`${slangVirtualScheme}:/${vDocName}`);
 		virtualDocumentContents.set(vDocName, shader.code);
 		const doc = await workspace.openTextDocument(vdocUri);
-		await window.showTextDocument(doc, { preview: false, viewColumn: window.activeTextEditor?.viewColumn }).then(editor => {
+		await window.showTextDocument(doc, { preview: false, viewColumn: vscode.ViewColumn.Beside }).then(editor => {
 			vscode.languages.setTextDocumentLanguage(doc, compileOptionMap[targetSelection].languageId);
 		});
 	}));
@@ -305,7 +305,7 @@ export async function sharedActivate(context: ExtensionContext, slangHandler: Sl
 		const vdocUri = Uri.parse(`${slangVirtualScheme}:/${vDocName}`);
 		virtualDocumentContents.set(vDocName, JSON.stringify(shader.reflection, undefined, 4));
 		const doc = await workspace.openTextDocument(vdocUri);
-		await window.showTextDocument(doc, { preview: false, viewColumn: window.activeTextEditor?.viewColumn }).then(editor => {
+		await window.showTextDocument(doc, { preview: false, viewColumn: vscode.ViewColumn.Beside }).then(editor => {
 			vscode.languages.setTextDocumentLanguage(doc, "json");
 		});
 	}));
