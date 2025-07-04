@@ -20,6 +20,24 @@ This extension provides the following assisting features:
 
 **Note:** the code formatting feature requires `clang-format` to be available on your system. The location of clang-format can be configured in the extension settings.
 
+## Browser support
+
+This extension provides support for browser version of vscode such as vscode.dev and github.dev. However, not all editor features are available.
+
+## Playground Features
+
+This extension also provides features for using shaders:
+
+- A command to build Slang files to different languages
+  - SPIR-V
+  - HLSL
+  - GLSL
+  - Metal
+  - WGSL
+- A command to run Slang Playground projects
+- A command to get reflection information for a Slang project
+- Documentation via the `Show Playground Documentation` command.
+
 ## Configurations
 
 ### Predefined preprocessor macros
@@ -53,4 +71,3 @@ Goto definition:
 
 * [Slang public repository](http://github.com/shader-slang/slang)
 * [Slang Visual Studio Code Extension repository](https://github.com/shader-slang/slang-vscode-extension)
-
