@@ -32,7 +32,6 @@ echo "updating .vscodeignore for native builds"
 cp .vscodeignore .vscodeignore.bak
 # Exclude web files for native builds
 echo 'media/*.worker.js' >> .vscodeignore
-echo 'client/dist/browserClientMain.js' >> .vscodeignore
 echo 'server/dist/browserServerMain.js' >> .vscodeignore
 
 target_build "$WIN32_X64_ZIP" win32-x64 bin/slang.dll bin/slang-glsl-module.dll bin/slangd.exe
@@ -50,7 +49,6 @@ echo "updating .vscodeignore for web build"
 cp .vscodeignore .vscodeignore.bak
 # Exclude native/server files for web build
 echo 'media/*.node.js' >> .vscodeignore
-echo 'client/dist/nativeClientMain.js' >> .vscodeignore
 echo 'server/dist/nativeServerMain.js' >> .vscodeignore
 
 vsce package --target "web"
