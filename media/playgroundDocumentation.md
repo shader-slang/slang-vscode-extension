@@ -7,7 +7,7 @@ No data is sent to any server.
 
 You can compile shaders to many targets supported by Slang here, including SPIR-V, HLSL, GLSL, Metal, and
 WGSL.
-Generating DXIL requires DXC, which doesn't run in the browser so it's not supported here. You will have the opportinuty to select entrypoints for targets that don't support multiple entrypoints.
+Generating DXIL requires DXC, which doesn't run in the browser so it's not supported here. You will have the opportunuty to select entrypoints for targets that don't support multiple entrypoints.
 You can compile shaders with either the button in the top right of the editor, or the command `Slang Compile`.
 
 ## Run Shaders (the "Run" button)

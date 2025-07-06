@@ -1,5 +1,5 @@
 {
-    "name": "devon-slang-playground-extension",
+	"name": "slang-playground-extension",
 	"description": "VSCode part of a language server in a web extension",
 	"author": "Microsoft Corporation",
 	"license": "MIT",
@@ -18,6 +18,6 @@
 	"devDependencies": {
 		"@types/vscode": "^1.85.0",
 		"@vscode/test-web": "^0.0.51",
-    	"@webgpu/types": "^0.1.51"
+		"@webgpu/types": "^0.1.51"
 	}
 }

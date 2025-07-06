@@ -1,6 +1,6 @@
 {
-    "name": "devon-slang-playground-extension",
-    "description": "Extension for the Slang Shading Language",
+	"name": "slang-playground-extension",
+	"description": "Extension for the Slang Shading Language",
 	"version": "0.0.1",
 	"engines": {
 		"vscode": "^1.85.0"
