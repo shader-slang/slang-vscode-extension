@@ -3,6 +3,7 @@
 - Fixes highlighting, hover, and signature info for constructor calls.
 - Signature help now automatically selects the best candidate.
 - Go-to-definition can now display core module source.
+- Auto completion now sorts the candidate based on relevance to context.
 - Adds a new setting to turn on/off format-on-type.
 - Auto completion now supports completing implementing method signatures after typing `override`.
 - Fixes highlighting/hover for associated type declref exprs
