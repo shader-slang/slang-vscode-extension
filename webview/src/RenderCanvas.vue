@@ -39,6 +39,9 @@ const frameID = ref(0);
 const fps = ref(0);
 
 let device: GPUDevice;
+const props = defineProps({
+    showFullscreenToggle:  Boolean
+})
 
 async function tryGetDevice(): Promise<GPUDevice | null> {
     if (!isWebGPUSupported()) {
@@ -974,7 +977,7 @@ function onRun(runCompiledCode: CompiledPlayground) {
             <span>{{ frameTime.toFixed(1) }} ms</span>
             <span>{{ Math.min(Math.round(1000 / frameTime), 60) }} fps</span>
             <span>{{ canvas?.width }}x{{ canvas?.height }}</span>
-            <button @click="toggleFullscreen" title="Toggle full screen">&#x26F6;&#xFE0E;</button>
+            <button v-if="props.showFullscreenToggle" @click="toggleFullscreen" title="Toggle full screen">&#x26F6;&#xFE0E;</button>
         </div>
     </div>
 </template>
