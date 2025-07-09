@@ -214,6 +214,8 @@ export async function sharedActivate(context: ExtensionContext, slangHandler: Sl
 		}
 	});
 
+	updateContext(window.activeTextEditor);
+
 	function updateContext(editor: vscode.TextEditor | undefined) {
 		const text = editor?.document.getText() || "";
 		const shouldShow = text.match("void\\s+printMain\\s*\\(") != null || text.match("float4\\s+imageMain\\s*\\(") != null;
