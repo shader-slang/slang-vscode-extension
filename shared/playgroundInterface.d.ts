@@ -99,13 +99,9 @@ export type Shader = {
 	threadGroupSizes: { [key: string]: [number, number, number] },
 };
 
-export type Result<T> = {
-	succ: true,
-	result: T
-} | {
-	succ: false,
-	message: string
-};
+export type Result<T> =
+	| { succ: true; result: T }
+	| { succ: false; message: string; log?: string };
 
 export type UniformController = { buffer_offset: number } & ({
 	type: "SLIDER",
@@ -221,29 +217,29 @@ export type PlaygroundRun = {
 }
 
 type WorkerRequest = {
-    type: 'Initialize',
-    initializationOptions: ServerInitializationOptions,
+	type: 'Initialize',
+	initializationOptions: ServerInitializationOptions,
 } | {
-    type: 'DidOpenTextDocument',
-    textDocument: {
-        uri: string,
-        text: string,
-    }
+	type: 'DidOpenTextDocument',
+	textDocument: {
+		uri: string,
+		text: string,
+	}
 } | {
-    type: 'DidChangeTextDocument',
-    textDocument: {
-        uri: string,
-    },
-    contentChanges: TextDocumentContentChangeEvent[],
+	type: 'DidChangeTextDocument',
+	textDocument: {
+		uri: string,
+	},
+	contentChanges: TextDocumentContentChangeEvent[],
 } | {
-    type: 'slang/compile',
-    sourceCode: string,
-    shaderPath: string,
-    entrypoint: string,
-    target: CompileTarget,
-    noWebGPU: boolean
+	type: 'slang/compile',
+	sourceCode: string,
+	shaderPath: string,
+	entrypoint: string,
+	target: CompileTarget,
+	noWebGPU: boolean
 } | {
-    type: 'slang/entrypoints',
-    sourceCode: string,
-    shaderPath: string
+	type: 'slang/entrypoints',
+	sourceCode: string,
+	shaderPath: string
 };

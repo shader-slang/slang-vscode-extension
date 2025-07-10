@@ -2,7 +2,7 @@
 import createModule from '../../media/slang-wasm.node.js';
 import type { MainModule } from '../../media/slang-wasm.node.js';
 import spirvTools from '../../media/spirv-tools.node.js';
-import type { EntrypointsRequest, ServerInitializationOptions, WorkerRequest } from '../../shared/playgroundInterface.js';
+import type { EntrypointsRequest, Result, ServerInitializationOptions, WorkerRequest } from '../../shared/playgroundInterface.js';
 import playgroundSource from "./slang/playground.slang";
 import { SlangCompiler } from './compiler.js';
 import { modifyEmscriptenFile, getEmscriptenURI, getSlangdURI, removePrefix } from './lspSharedUtils.js';
@@ -34,17 +34,14 @@ function loadFileIntoEmscriptenFS(uri: string, content: string) {
     slangWasmModule.FS.writeFile(uri, content);
 }
 
-let moduleReady: Promise<void> | null = null;
+let moduleReady: Promise<Result<undefined>> | null = null;
 async function ensureSlangModuleLoaded() {
     if (moduleReady) return moduleReady;
     moduleReady = (async () => {
         // Instantiate the WASM module and create the language server
         slangWasmModule = await createModule();
         compiler = new SlangCompiler(slangWasmModule);
-        let result = compiler.init();
-        if (!result.ret) {
-            console.error(`Failed to initialize compiler: ${result.msg}`)
-        }
+        return compiler.init();
     })();
     return moduleReady;
 }
@@ -52,7 +49,7 @@ async function ensureSlangModuleLoaded() {
 parentPort!.on("message", async (params: WorkerRequest) => {
     switch (params.type) {
         case 'Initialize':
-            await initialize(params);
+            parentPort!.postMessage(await initialize(params));
             break;
         case 'DidOpenTextDocument':
             await DidOpenTextDocument(params);
@@ -73,20 +70,26 @@ parentPort!.on("message", async (params: WorkerRequest) => {
     }
 });
 
-async function initialize(params: WorkerRequest & { type: 'Initialize' }) {
+async function initialize(params: WorkerRequest & { type: 'Initialize' }): Promise<Result<undefined>> {
     // Accept extensionUri from initializationOptions
     if (params.initializationOptions) {
         initializationOptions = params.initializationOptions;
     }
-    try {
-        await ensureSlangModuleLoaded();
-    } catch (err) {
-        console.error('Failed to load slang-wasm:', err);
+    let moduleLoadResult = await ensureSlangModuleLoaded();
+
+    if(!moduleLoadResult.succ) {
+        return moduleLoadResult;
     }
+    
 
     for (const file of initializationOptions.files) {
         const emscriptenURI = getEmscriptenURI(file.uri, initializationOptions.workspaceUris);
         loadFileIntoEmscriptenFS(emscriptenURI, file.content);
+    }
+
+    return {
+        succ: true,
+        result: undefined,
     }
 }
 

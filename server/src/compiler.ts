@@ -16,7 +16,6 @@ const RUNNABLE_ENTRY_POINT_SOURCE_MAP: { [key in RunnableShaderType]: string } =
 	'printMain': printMainSource,
 };
 
-
 export class SlangCompiler {
 	static SLANG_STAGE_VERTEX = 1;
 	static SLANG_STAGE_FRAGMENT = 5;
@@ -27,37 +26,26 @@ export class SlangCompiler {
 	compileTargetMap: { name: CompileTarget, value: number }[] | null = null;
 
 	slangWasmModule: MainModule;
-	diagnosticsMsg;
-	shaderType: ShaderType;
 
 	spirvToolsModule: SpirvTools | null = null;
 
-	mainModules: Map<string, { source: EmbindString }> = new Map();
-
 	constructor(module: MainModule) {
 		this.slangWasmModule = module;
-		this.diagnosticsMsg = "";
-		this.shaderType = null;
-		for (let runnableEntryPoint of RUNNABLE_ENTRY_POINT_NAMES) {
-			this.mainModules.set(runnableEntryPoint, { source: RUNNABLE_ENTRY_POINT_SOURCE_MAP[runnableEntryPoint] });
-		}
 	}
 
-	init() {
+	init(): Result<undefined> {
 		try {
 			this.globalSlangSession = this.slangWasmModule.createGlobalSession();
 			this.compileTargetMap = this.slangWasmModule.getCompileTargets();
 
 			if (!this.globalSlangSession || !this.compileTargetMap) {
 				const error = this.slangWasmModule.getLastError();
-				return { ret: false, msg: (error.type + " error: " + error.message) };
-			}
-			else {
-				return { ret: true, msg: "" };
+				return { succ: false, message: (error.type + " error: " + error.message), log: error.type + " error: " + error.message };
+			} else {
+				return { succ: true, result: undefined };
 			}
 		} catch (e) {
-			console.error(e);
-			return { ret: false, msg: '' + e };
+			return { succ: false, message: '' + e, log: '' + e };
 		}
 	}
 
@@ -77,7 +65,6 @@ export class SlangCompiler {
 		for (let entryPointName of RUNNABLE_ENTRY_POINT_NAMES) {
 			let entryPoint = module.findAndCheckEntryPoint(entryPointName, SlangCompiler.SLANG_STAGE_COMPUTE);
 			if (entryPoint) {
-				this.shaderType = entryPointName;
 				return entryPoint;
 			}
 		}
@@ -85,22 +72,28 @@ export class SlangCompiler {
 		return null;
 	}
 
-	findEntryPoint(module: Module, entryPointName: string | null, stage: number): Module | null {
+	findEntryPoint(module: Module, entryPointName: string | null, stage: number): Result<Module> {
 		if (entryPointName == null || entryPointName == "") {
 			const entryPoint = this.findRunnableEntryPoint(module);
 			if (!entryPoint) {
-				this.diagnosticsMsg += "Warning: The current shader code is not runnable because 'imageMain' or 'printMain' functions are not found.\n";
-				this.diagnosticsMsg += "Use the 'Compile' button to compile it to different targets.\n";
+				return {
+					succ: false,
+					message: "The current shader code is not runnable because 'imageMain' or 'printMain' functions are not found.",
+				};
 			}
-			return entryPoint;
-		}
-		else {
+			return {
+				succ: true,
+				result: entryPoint,
+			};
+		} else {
 			const entryPoint = module.findAndCheckEntryPoint(entryPointName, stage);
 			if (!entryPoint) {
 				const error = this.slangWasmModule.getLastError();
-				console.error(error.type + " error: " + error.message);
-				this.diagnosticsMsg += (error.type + " error: " + error.message);
-				return null;
+				return {
+					succ: false,
+					message: (error.type + " error: see log for more information"),
+					log: error.message.toString(),
+				};
 			}
 			return entryPoint;
 		}
@@ -112,7 +105,7 @@ export class SlangCompiler {
         }
     }
 
-    spirvDisassembly(spirvBinary: any) {
+    spirvDisassembly(spirvBinary: any): Result<string> {
         if (!this.spirvToolsModule)
             throw new Error("Spirv tools not initialized");
         let disAsmCode = this.spirvToolsModule.dis(
@@ -124,18 +117,23 @@ export class SlangCompiler {
 
 
         if (disAsmCode == "Error") {
-            this.diagnosticsMsg += ("SPIRV disassembly error");
-            disAsmCode = "";
-        }
+			return {
+				succ: false,
+				message: "Error disassembling SPIR-V code",
+			};
+		}
 
-        return disAsmCode;
+        return {
+			succ: true,
+			result: disAsmCode,
+		};
     }
 
 	// If user code defines imageMain or printMain, we will know the entry point name because they're
 	// already defined in our pre-built module. So we will add those one of those entry points to the
 	// dropdown list. Then, we will find whether user code also defines other entry points, if it has
 	// we will also add them to the dropdown list.
-	findDefinedEntryPoints(shaderSource: string, shaderPath: string): string[] {
+	findDefinedEntryPoints(shaderSource: string, shaderPath: string): Result<string[]> {
 		let result: string[] = [];
 		let runnable: string[] = [];
 
@@ -152,7 +150,11 @@ export class SlangCompiler {
 			slangSession = this.globalSlangSession?.createSession(
 				this.findCompileTarget("SPIRV"));
 			if (!slangSession) {
-				return [];
+				return {
+					succ: false,
+					message: "Unable to create Slang session for SPIRV compilation",
+					log: this.slangWasmModule.getLastError().message.toString(),
+				};
 			}
 			let module: Module | null = null;
 			if (runnable.length > 0) {
@@ -161,8 +163,11 @@ export class SlangCompiler {
 			module = slangSession.loadModuleFromSource(shaderSource, "user", dir + "/user.slang");
 			if (!module) {
 				const error = this.slangWasmModule.getLastError();
-				console.error(error.type + " error: " + error.message);
-				return result;
+				return {
+					succ: false,
+					message: (error.type + " error: see log for more information"),
+					log: error.type + " error: " + error.message
+				};
 			}
 
 			const count = module.getDefinedEntryPointCount();
@@ -170,15 +175,22 @@ export class SlangCompiler {
 				const entryPoint = module.getDefinedEntryPoint(i);
 				result.push(entryPoint.getName());
 			}
-		} catch (e) {
-			return [];
+		} catch (e: any) {
+			return {
+				succ: false,
+				message: "Error finding defined entry points",
+				log: e.message
+			};
 		}
 		finally {
 			if (slangSession)
 				slangSession.delete();
 		}
 		result.push(...runnable);
-		return result;
+		return {
+			succ: true,
+			result: result
+		};
 	}
 
 	// If user entrypoint name imageMain or printMain, we will load the pre-built main modules because they
@@ -191,47 +203,59 @@ export class SlangCompiler {
 	// Since we will not let user to change the entry point code, we can precompile the entry point module
 	// and reuse it for every compilation.
 
-	compileEntryPointModule(slangSession: Session, moduleName: string, shaderPath: string) {
+	compileEntryPointModule(slangSession: Session, moduleName: RunnableShaderType, shaderPath: string): Result<{ module: Module, entryPoint: Module }> {
 		const split_dir = shaderPath.split('/');
 		split_dir.pop();
 		const dir = split_dir.join('/')
 
-		let source = this.mainModules.get(moduleName)?.source;
-		if (source == undefined) {
-			throw new Error(`Could not get module ${moduleName}`);
-		}
+		let source = RUNNABLE_ENTRY_POINT_SOURCE_MAP[moduleName];
 		let module: Module | null = slangSession.loadModuleFromSource(source, moduleName, dir + '/' + moduleName + '.slang');
 
 		if (!module) {
 			const error = this.slangWasmModule.getLastError();
-			console.error(error.type + " error: " + error.message);
-			this.diagnosticsMsg += (error.type + " error: " + error.message);
-			return null;
+			return {
+				succ: false,
+				message: (error.type + " error: see log for more information"),
+				log: error.type + " error: " + error.message
+			};
 		}
 
-		// we use the same entry point name as module name
-		let entryPoint = this.findEntryPoint(module, moduleName, SlangCompiler.SLANG_STAGE_COMPUTE);
-		if (!entryPoint)
-			return null;
+		let entryPointResult = this.findEntryPoint(module, moduleName, SlangCompiler.SLANG_STAGE_COMPUTE);
+		if (!entryPointResult.succ) {
+			return entryPointResult;
+		}
 
-		return { module: module, entryPoint: entryPoint };
-
+		return {
+			succ: true,
+			result: { module: module, entryPoint: entryPointResult.result }
+		};
 	}
 
-	getPrecompiledProgram(slangSession: Session, moduleName: string, shaderPath: string) {
-		if (!this.isRunnableEntryPoint(moduleName))
-			return null;
-
-		let mainModule = this.compileEntryPointModule(slangSession, moduleName, shaderPath);
-
-		this.shaderType = moduleName;
-		return mainModule;
+	getPrecompiledProgram(slangSession: Session, moduleName: string, shaderPath: string): Result<{ module: Module, entryPoint: Module }> {
+		if (!this.isRunnableEntryPoint(moduleName)) {
+			return {
+				succ: false,
+				message: `Not a runnable entry point: ${moduleName}`,
+				log: `Not a runnable entry point: ${moduleName}`
+			};
+		}
+		return this.compileEntryPointModule(slangSession, moduleName, shaderPath);
 	}
 
-	addActiveEntryPoints(slangSession: Session, shaderSource: string, shaderPath: string, entryPointName: string, isWholeProgram: boolean, userModule: Module, componentList: Module[]) {
+	addActiveEntryPoints(
+		slangSession: Session,
+		shaderSource: string,
+		shaderPath: string,
+		entryPointName: string,
+		isWholeProgram: boolean,
+		userModule: Module,
+		componentList: Module[]
+	): Result<true> {
 		if (entryPointName == "" && !isWholeProgram) {
-			this.diagnosticsMsg += ("error: No entry point specified");
-			return false;
+			return {
+				succ: false,
+				message: "No entry point specified",
+			};
 		}
 
 		// For now, we just don't allow user to define imageMain or printMain as entry point name for simplicity
@@ -239,8 +263,10 @@ export class SlangCompiler {
 		for (let i = 0; i < count; i++) {
 			const name = userModule.getDefinedEntryPoint(i).getName();
 			if (this.isRunnableEntryPoint(name)) {
-				this.diagnosticsMsg += `error: Entry point name ${name} is reserved`;
-				return false;
+				return {
+					succ: false,
+					message: `Entry point name ${name} is reserved`,
+				};
 			}
 		}
 
@@ -249,47 +275,47 @@ export class SlangCompiler {
 		if (entryPointName != "" && !isWholeProgram) {
 			if (this.isRunnableEntryPoint(entryPointName)) {
 				// we use the same entry point name as module name
-				const mainProgram = this.getPrecompiledProgram(slangSession, entryPointName, shaderPath);
-				if (!mainProgram)
-					return false;
-
-				this.shaderType = entryPointName;
-
-				componentList.push(mainProgram.module);
-				componentList.push(mainProgram.entryPoint);
-			}
-			else {
+				const mainProgramResult = this.getPrecompiledProgram(slangSession, entryPointName, shaderPath);
+				if (!mainProgramResult.succ) {
+					return mainProgramResult;
+				}
+				componentList.push(mainProgramResult.result.module);
+				componentList.push(mainProgramResult.result.entryPoint);
+			} else {
 				// we know the entry point is from user module
-				const entryPoint = this.findEntryPoint(userModule, entryPointName, SlangCompiler.SLANG_STAGE_COMPUTE);
-				if (!entryPoint)
-					return false;
-
-				componentList.push(entryPoint);
+				const entryPointResult = this.findEntryPoint(userModule, entryPointName, SlangCompiler.SLANG_STAGE_COMPUTE);
+				if (!entryPointResult.succ) {
+					return entryPointResult;
+				}
+				componentList.push(entryPointResult.result);
 			}
-		}
-		// otherwise, it's a whole program compilation, we will find all active entry points in the user code
-		// and pre-built modules.
-		else {
-			const results = this.findDefinedEntryPoints(shaderSource, shaderPath);
+		} else {
+			// otherwise, it's a whole program compilation, we will find all active entry points in the user code
+			// and pre-built modules.
+			const resultsResult = this.findDefinedEntryPoints(shaderSource, shaderPath);
+			if (!resultsResult.succ) {
+				return resultsResult;
+			}
+			const results = resultsResult.result;
 			for (let i = 0; i < results.length; i++) {
 				if (this.isRunnableEntryPoint(results[i])) {
-					const mainProgram = this.getPrecompiledProgram(slangSession, results[i], shaderPath);
-					if (!mainProgram)
-						return false;
-					componentList.push(mainProgram.module);
-					componentList.push(mainProgram.entryPoint);
-					return true;
-				}
-				else {
-					const entryPoint = this.findEntryPoint(userModule, results[i], SlangCompiler.SLANG_STAGE_COMPUTE);
-					if (!entryPoint)
-						return false;
-
-					componentList.push(entryPoint);
+					const mainProgramResult = this.getPrecompiledProgram(slangSession, results[i], shaderPath);
+					if (!mainProgramResult.succ) {
+						return mainProgramResult;
+					}
+					componentList.push(mainProgramResult.result.module);
+					componentList.push(mainProgramResult.result.entryPoint);
+					return { succ: true, result: true };
+				} else {
+					const entryPointResult = this.findEntryPoint(userModule, results[i], SlangCompiler.SLANG_STAGE_COMPUTE);
+					if (!entryPointResult.succ) {
+						return entryPointResult;
+					}
+					componentList.push(entryPointResult.result);
 				}
 			}
 		}
-		return true;
+		return { succ: true, result: true };
 	}
 
 	getBindingDescriptor(name: string, parameterReflection: ReflectionParameter): Partial<GPUBindGroupLayoutEntry> {
@@ -333,7 +359,7 @@ export class SlangCompiler {
 				return { buffer: { type: 'storage' } };
 			} else {
 				let _: never = parameterReflection.type;
-				console.error(`Could not generate binding for ${name}`)
+				throw new Error(`Could not generate binding for ${name}`)
 				return {}
 			}
 		} else if (parameterReflection.type.kind == "samplerState") {
@@ -341,7 +367,7 @@ export class SlangCompiler {
 		} else if (parameterReflection.binding.kind == "uniform") {
 			return { buffer: { type: 'uniform' } };
 		} else {
-			console.error(`Could not generate binding for ${name}`)
+			throw new Error(`Could not generate binding for ${name}`)
 			return {}
 		}
 	}
@@ -372,16 +398,14 @@ export class SlangCompiler {
 		return resourceDescriptors;
 	}
 
-	loadModule(slangSession: Session, moduleName: string, modulePath: string, source: string, componentTypeList: Module[]) {
+	loadModule(slangSession: Session, moduleName: string, modulePath: string, source: string, componentTypeList: Module[]): Result<true> {
 		let module: Module | null = slangSession.loadModuleFromSource(source, moduleName, modulePath);
 		if (!module) {
 			const error = this.slangWasmModule.getLastError();
-			console.error(error.type + " error: " + error.message);
-			this.diagnosticsMsg += (error.type + " error: " + error.message);
-			return false;
+			return { succ: false, message: error.type + " error. See log for more information", log: error.type + " error: " + error.message };
 		}
 		componentTypeList.push(module);
-		return true;
+		return { succ: true, result: true };
 	}
 
 	async compile(request: CompileRequest, workspaceURIs: string[], spirvToolsInitializer: () => Promise<SpirvTools>): Promise<Result<Shader>> {
@@ -404,14 +428,17 @@ export class SlangCompiler {
 
 		try {
 			if (this.globalSlangSession == null) {
-				throw new Error("Slang session not available. Maybe the compiler hasn't been initialized yet?");
+				return {
+					succ: false,
+					message: "Slang session not available. Maybe the compiler hasn't been initialized yet?",
+				};
 			}
 			let slangSession = this.globalSlangSession.createSession(compileTarget);
 			if (!slangSession) {
 				let error = this.slangWasmModule.getLastError();
 				return {
 					succ: false,
-					message: (error.type + " error: " + error.message)
+					message: (error.type + " error: " + error.message),
 				};
 			}
 
@@ -419,23 +446,25 @@ export class SlangCompiler {
 
 			let userModuleIndex = 0;
 			if (shouldLinkPlaygroundModule) {
-				if (!this.loadModule(slangSession, "playground", dir + "/playground.slang", playgroundSource, components))
+				const playgroundResult = this.loadModule(slangSession, "playground", dir + "/playground.slang", playgroundSource, components);
+				if (!playgroundResult.succ)
 					return {
 						succ: false,
-						message: "Unable to load playground module"
+						message: `Unable to load playground module: ${playgroundResult.message}`,
+						log: playgroundResult.log
 					};
 				userModuleIndex++;
 			}
-			if (!this.loadModule(slangSession, "user", dir + '/user.slang', request.sourceCode, components))
+			const userResult = this.loadModule(slangSession, "user", dir + '/user.slang', request.sourceCode, components);
+			if (!userResult.succ)
 				return {
 					succ: false,
-					message: "Unable to load user module"
+					message: `Unable to load user module: ${userResult.message}`,
+					log: userResult.log
 				};
-			if (this.addActiveEntryPoints(slangSession, request.sourceCode, shaderPath, request.entrypoint, isWholeProgram, components[userModuleIndex], components) == false)
-				return {
-					succ: false,
-					message: "Unable to add entry points"
-				};
+			const entryPointsResult = this.addActiveEntryPoints(slangSession, request.sourceCode, shaderPath, request.entrypoint, isWholeProgram, components[userModuleIndex], components);
+			if (!entryPointsResult.succ)
+				return entryPointsResult;
 			let program: ComponentType = slangSession.createCompositeComponentType(components);
 			let linkedProgram: ComponentType = program.link();
 
@@ -445,7 +474,11 @@ export class SlangCompiler {
 				const spirvCode = linkedProgram.getTargetCodeBlob(
 					0 /* targetIndex */
 				);
-				outCode = this.spirvDisassembly(spirvCode);
+				const disAsmResult = this.spirvDisassembly(spirvCode);
+				if (!disAsmResult.succ) {
+					return disAsmResult;
+				}
+				outCode = disAsmResult.result;
 			}
 			else {
 				if (isWholeProgram)
@@ -485,11 +518,10 @@ export class SlangCompiler {
 
 			if (!outCode || outCode == "") {
 				let error = this.slangWasmModule.getLastError();
-				console.error(error.type + " error: " + error.message);
-				this.diagnosticsMsg += (error.type + " error: " + error.message);
 				return {
 					succ: false,
-					message: `${error.type} error: ${error.message}`
+					message: `${error.type} error: ${error.message}`,
+					log: error.type + " error: " + error.message
 				};
 			}
 
@@ -511,17 +543,20 @@ export class SlangCompiler {
 			if (typeof e === 'object' && e !== null && e.constructor.name === 'Exception') {
 				return {
 					succ: false,
-					message: "Slang internal error occurred."
+					message: "Slang internal error occurred.",
+					log: String(e)
 				};
 			} else if (e instanceof Error) {
 				return {
 					succ: false,
-					message: e.message
+					message: e.message,
+					log: e.stack || e.message
 				};
 			}
 			return {
 				succ: false,
-				message: "Unknown error occurred"
+				message: "Unknown error occurred",
+				log: String(e)
 			};
 		}
 	}

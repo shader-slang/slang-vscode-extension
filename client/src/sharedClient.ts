@@ -1,5 +1,13 @@
 import { ExtensionContext, Uri, commands, window, workspace } from 'vscode';
 import * as vscode from 'vscode';
+
+let slangLogChannel: vscode.OutputChannel | undefined;
+function getSlangLogChannel(): vscode.OutputChannel {
+	if (!slangLogChannel) {
+		slangLogChannel = vscode.window.createOutputChannel('Slang Extension Log');
+	}
+	return slangLogChannel;
+}
 import { LanguageClientOptions } from 'vscode-languageclient';
 
 import { LanguageClient } from 'vscode-languageclient/browser';
@@ -54,7 +62,9 @@ export async function getSlangFilesWithContents(): Promise<{ uri: string, conten
 			const document = await vscode.workspace.openTextDocument(uri);
 			results.push({ uri: uri.toString(false), content: document.getText() });
 		} catch (err) {
-			console.error(`Failed to read ${uri.fsPath}:`, err);
+			const logChannel = getSlangLogChannel();
+			logChannel.appendLine(`Failed to read ${uri.fsPath}: ${err}`);
+			logChannel.show(true);
 		}
 	}
 
@@ -86,14 +96,24 @@ export async function sharedActivate(context: ExtensionContext, slangHandler: Sl
 				noWebGPU: false,
 			});
 			if (compileResult.succ == false) {
+				const logChannel = getSlangLogChannel();
 				vscode.window.showErrorMessage(compileResult.message);
+				if (compileResult.log) {
+					logChannel.appendLine(compileResult.log);
+					logChannel.show(true);
+				}
 				return;
 			}
 			const compilation = compileResult.result;
 
 			let resourceCommandsResult = getResourceCommandsFromAttributes(compilation.reflection);
 			if (resourceCommandsResult.succ == false) {
+				const logChannel = getSlangLogChannel();
 				vscode.window.showErrorMessage("Error while parsing Resource commands: " + resourceCommandsResult.message);
+				if (resourceCommandsResult.log) {
+					logChannel.appendLine(resourceCommandsResult.log);
+					logChannel.show(true);
+				}
 				return;
 			}
 			let uniformSize = getUniformSize(compilation.reflection)
@@ -101,7 +121,12 @@ export async function sharedActivate(context: ExtensionContext, slangHandler: Sl
 
 			let callCommandResult = parseCallCommands(compilation.reflection);
 			if (callCommandResult.succ == false) {
+				const logChannel = getSlangLogChannel();
 				vscode.window.showErrorMessage("Error while parsing CALL commands: " + callCommandResult.message);
+				if (callCommandResult.log) {
+					logChannel.appendLine(callCommandResult.log);
+					logChannel.show(true);
+				}
 				return;
 			}
 

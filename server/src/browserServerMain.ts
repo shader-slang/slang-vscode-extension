@@ -68,8 +68,8 @@ async function ensureSlangModuleLoaded() {
         slangWasmModule = await createModule();
         compiler = new SlangCompiler(slangWasmModule);
         let result = compiler.init();
-        if (!result.ret) {
-            console.error(`Failed to initialize compiler: ${result.msg}`)
+        if (!result.succ) {
+            console.error(`Failed to initialize compiler: ${result.message}`)
         }
         slangd = slangWasmModule.createLanguageServer()!;
     })();
@@ -307,7 +307,7 @@ connection.onRequest('slang/compile', async (params: CompileRequest): Promise<Re
     return await compiler.compile(params, initializationOptions.workspaceUris, spirvTools);
 });
 
-connection.onRequest('slang/entrypoints', async (params: EntrypointsRequest): Promise<EntrypointsResult> => {
+connection.onRequest('slang/entrypoints', async (params: EntrypointsRequest): Promise<Result<EntrypointsResult>> => {
     let path = getEmscriptenURI(params.shaderPath, initializationOptions.workspaceUris);
     return compiler.findDefinedEntryPoints(params.sourceCode, path)
 });
