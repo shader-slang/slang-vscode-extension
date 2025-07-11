@@ -1,0 +1,10 @@
+{
+	"name": "slang-playground-extension",
+	"description": "Extension for the Slang Shading Language",
+	"version": "0.0.1",
+	"dependencies": {},
+	"devDependencies": {
+		"vscode-languageserver": "^9.0.1",
+		"@webgpu/types": "^0.1.51"
+	}
+}

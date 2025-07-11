@@ -1,4 +1,13 @@
 # Change Log
+
+## Unreleased
+
+- Add Slang Playground Featuers
+  - Run shaders
+  - Compile shaders
+  - Get reflection information
+- Added browser support
+
 # v1.10.0
 - Fixes highlighting, hover, and signature info for constructor calls.
 - Signature help now automatically selects the best candidate.
