@@ -95,7 +95,7 @@ export class SlangCompiler {
 					log: error.message.toString(),
 				};
 			}
-			return entryPoint;
+			return { succ: true, result: entryPoint };
 		}
 	}
 
