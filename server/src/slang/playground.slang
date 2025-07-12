@@ -124,6 +124,13 @@ public struct playground_RANDAttribute
     int count;
 };
 
+// Load raw binary data from URL into a structured buffer.
+[__AttributeUsage(_AttributeTargets.Var)]
+public struct playground_DATAAttribute
+{
+    string url;
+};
+
 // Gives the current time in milliseconds.
 [__AttributeUsage(_AttributeTargets.Var)]
 public struct playground_TIMEAttribute

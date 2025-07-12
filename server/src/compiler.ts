@@ -356,7 +356,12 @@ export class SlangCompiler {
 
 				return { storageTexture: { access, format } };
 			} else if (parameterReflection.type.baseShape == "structuredBuffer") {
-				return { buffer: { type: 'storage' } };
+				// WebGPU is strict about buffer binding types and requires exact matches:
+				// - StructuredBuffer<T> (read-only) requires { buffer: { type: 'read-only-storage' } }
+				// - RWStructuredBuffer<T> (read-write) requires { buffer: { type: 'storage' } }
+				// Mismatched binding types will cause WebGPU validation errors and webview crashes.
+				const isReadWrite = parameterReflection.type.access === "readWrite";
+				return { buffer: { type: isReadWrite ? 'storage' : 'read-only-storage' } };
 			} else {
 				let _: never = parameterReflection.type;
 				throw new Error(`Could not generate binding for ${name}`)
