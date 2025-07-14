@@ -166,8 +166,7 @@
                 "slang.slangdLocation": {
                     "scope": "machine-overridable",
                     "type": "string",
-                    "default": "",
-                    "markdownDescription": "The location of Slang's language server executable `slangd`. Will use bundled language server when unspecified."
+                    "markdownDescription": "The location of Slang's language server executable `slangd`. If left unspecified, will use bundled language server if present, otherwise will attempt to find `slangd` under `PATH`."
                 },
                 "slang.format.clangFormatStyle": {
                     "scope": "window",

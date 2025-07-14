@@ -1,4 +1,4 @@
-
+import * as fs from 'fs';
 import * as path from 'path';
 import { workspace, ExtensionContext } from 'vscode';
 
@@ -7,7 +7,7 @@ export function getSlangdLocation(context: ExtensionContext): string {
     if (slangdLoc === "") slangdLoc = context.asAbsolutePath(
         path.join('server', 'bin', process.platform + '-' + process.arch, 'slangd')
     );
-    return slangdLoc;
+    return fs.existsSync(slangdLoc) ? slangdLoc : 'slangd';
 }
 
 export function getBuiltinModuleCode(context: ExtensionContext, moduleName: string): Promise<string>  {
