@@ -1,5 +1,5 @@
 {
-	"name": "slang-playground-extension",
+	"name": "slang-playground-extension-client",
 	"description": "VSCode interfacing part of a the extension",
 	"engines": {
 		"vscode": "^1.85.0"
