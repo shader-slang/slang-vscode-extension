@@ -16,6 +16,16 @@ This should produce the following files:
 
 * `slang-wasm.js`
 * `slang-wasm.d.ts`
+* `slang-wasm.worker.js`
+* `slang-wasm.worker.d.ts`
+* `slang-wasm.node.js`
+* `slang-wasm.node.d.ts`
+* `spirv-tools.js`
+* `spirv-tools.d.ts`
+* `spirv-tools.worker.js`
+* `spirv-tools.worker.d.ts`
+* `spirv-tools.node.js`
+* `spirv-tools.node.d.ts`
 
 Move them into the `media` directory.
 
