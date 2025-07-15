@@ -167,6 +167,10 @@ export type ParsedCommand = {
 	"url": string,
 	"format": GPUTextureFormat,
 } | {
+    "type": "DATA",
+    "url": string,
+    "elementSize": number,
+} | {
 	"type": "SLIDER",
 	"default": number,
 	"min": number,

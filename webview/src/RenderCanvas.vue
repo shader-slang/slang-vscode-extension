@@ -755,6 +755,51 @@ async function processResourceCommands(resourceBindings: Bindings, resourceComma
             catch (error) {
                 throw new Error(`Failed to create texture from image: ${error}`);
             }
+        } else if (parsedCommand.type === "DATA") {
+            const bindingInfo = resourceBindings[resourceName];
+            if (!bindingInfo) {
+                throw new Error(`Resource ${resourceName} is not defined in the bindings.`);
+            }
+
+            if (!bindingInfo.buffer) {
+                throw new Error(`Resource ${resourceName} is not defined as a buffer.`);
+            }
+
+            try {
+                // Resolve relative URLs against the file URI
+                let url = new URL(parsedCommand.url, fileUri).href;
+                
+                // Fetch binary data from URL
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch data from ${url}: ${response.statusText}`);
+                }
+                
+                const arrayBuffer = await response.arrayBuffer();
+                const data = new Uint8Array(arrayBuffer);
+                
+                // Calculate buffer size (must be multiple of element size)
+                const elementCount = Math.floor(data.length / parsedCommand.elementSize);
+                const bufferSize = elementCount * parsedCommand.elementSize;
+                
+                if (bufferSize === 0) {
+                    throw new Error(`Data from ${url} is too small for element size ${parsedCommand.elementSize}`);
+                }
+
+                // Create GPU buffer
+                const buffer = device.createBuffer({
+                    size: bufferSize,
+                    usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
+                });
+
+                // Upload data to GPU buffer (only the aligned portion)
+                device.queue.writeBuffer(buffer, 0, data.slice(0, bufferSize));
+                
+                safeSet(allocatedResources, resourceName, buffer);
+            }
+            catch (error) {
+                throw new Error(`Failed to process DATA command for ${resourceName}: ${error}`);
+            }
         } else if (parsedCommand.type === "RAND") {
             const elementSize = 4; // RAND is only valid for floats
             const bindingInfo = resourceBindings[resourceName];
