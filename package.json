@@ -232,12 +232,12 @@
             }
         ]
     },
+    "workspaces": ["client", "server", "shared", "uniform_webview", "webview"],
     "scripts": {
         "vscode:prepublish": "npm run compile",
         "compile": "node esbuild.config.mjs",
         "watch": "esbuild --config=esbuild.config.mjs --watch",
         "package": "node esbuild.config.mjs",
-        "postinstall": "cd client && npm install && cd ../server && npm install && cd ../webview && npm install && cd ../shared && npm install && cd ..",
         "chrome": "npm run compile && vscode-test-web --browserType=chromium --browserOption=--enable-unsafe-webgpu --extensionDevelopmentPath=. ./test-data"
     },
     "devDependencies": {
