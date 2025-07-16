@@ -232,7 +232,7 @@
             }
         ]
     },
-    "workspaces": ["client", "server", "webview", "shared"],
+    "workspaces": ["client", "server", "shared", "uniform_webview", "webview"],
     "scripts": {
         "vscode:prepublish": "npm run compile",
         "compile": "node esbuild.config.mjs",

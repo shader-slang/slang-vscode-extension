@@ -1,5 +1,5 @@
 {
-	"name": "slang-playground-extension",
+	"name": "slang-playground-extension-uniform-webview",
 	"description": "Extension for the Slang Shading Language",
 	"version": "0.0.1",
 	"engines": {
