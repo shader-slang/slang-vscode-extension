@@ -24,7 +24,7 @@ python3 utils/git-sync-deps
 
 # add an additional option to emcc command
 sed -i 's/\r$//' source/wasm/build.sh
-sed -i 's/-s MODULARIZE \\/-s MODULARIZE -s SINGLE_FILE -s ENVIRONMENT="worker"\\/' source/wasm/build.sh
+sed -i 's/-s MODULARIZE \\/-s MODULARIZE -s SINGLE_FILE -s ENVIRONMENT=worker\\/' source/wasm/build.sh
 
 bash -x source/wasm/build.sh
 
@@ -37,7 +37,7 @@ cp ../spirv-tools.d.ts ../spirv-tools.worker.d.ts
 
 # --- Build for Node.js ---
 # Patch build.sh for Node.js build
-sed -i 's/-s ENVIRONMENT="worker"/-s ENVIRONMENT="node"/' source/wasm/build.sh
+sed -i 's/-s ENVIRONMENT=worker/-s ENVIRONMENT=node/' source/wasm/build.sh
 
 bash -x source/wasm/build.sh
 

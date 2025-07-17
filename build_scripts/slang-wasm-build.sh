@@ -46,7 +46,7 @@ sed -i '/^[[:space:]]*target_link_options(/,/^[[:space:]]*)/c\
         -sMODULARIZE=1\
         -sEXPORT_ES6=0\
     	-sSINGLE_FILE=1\
-  		-sENVIRONMENT="worker"\
+  		-sENVIRONMENT=worker\
         -sEXPORTED_RUNTIME_METHODS=['FS']\
     )' "source/slang-wasm/CMakeLists.txt"
 
@@ -107,7 +107,7 @@ sed -i '/^[[:space:]]*target_link_options(/,/^[[:space:]]*)/c\
         -sMODULARIZE=1\
         -sEXPORT_ES6=0\
         -sSINGLE_FILE=1\
-        -sENVIRONMENT="node"\
+        -sENVIRONMENT=node\
         -sEXPORTED_RUNTIME_METHODS=['FS']\
     )' "source/slang-wasm/CMakeLists.txt"
 
