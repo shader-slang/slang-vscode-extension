@@ -12,18 +12,8 @@ do
 	fi
 done
 
-echo "[$(date)] Sync emsdk repo ..."
-if [ ! -d emsdk ]
-then
-	git clone https://github.com/emscripten-core/emsdk.git
-fi
-
-pushd emsdk
-	sed -i 's/\r$//' emsdk emsdk_env.sh
-	/bin/sh ./emsdk install latest
-	/bin/sh ./emsdk activate latest
-	source ./emsdk_env.sh
-popd
+# Setup emsdk using shared script
+source ./build_scripts/setup-emsdk.sh
 
 echo "[$(date)] Sync slang repo ..."
 if [ ! -d slang-repo ]

@@ -1,24 +1,12 @@
 #!/bin/bash
 
-if [ ! -d emsdk ]
-then
-    git clone https://github.com/emscripten-core/emsdk.git emsdk
-fi
+# Setup emsdk using shared script
+source ./build_scripts/setup-emsdk.sh
 
-pushd emsdk
-	sed -i 's/\r$//' emsdk emsdk_env.sh
-	/bin/sh ./emsdk install latest
-	/bin/sh ./emsdk activate latest
-	source ./emsdk_env.sh
-popd
-
-if [ ! -d spirv-tools ]
-then
-	git clone https://github.com/KhronosGroup/SPIRV-Tools.git spirv-tools
-fi
+# Setup SPIRV Tools using shared script
+source ./build_scripts/setup-spirv-tools.sh
 
 pushd spirv-tools
-git checkout vulkan-sdk-1.3.290.0
 
 python3 utils/git-sync-deps
 
