@@ -12,11 +12,8 @@ do
 	fi
 done
 
-echo "[$(date)] Sync emsdk repo ..."
-if [ ! -d emsdk ]
-then
-	git clone https://github.com/emscripten-core/emsdk.git
-fi
+# Setup pinned emsdk version using shared script
+source ./build_scripts/setup-emsdk.sh
 
 pushd emsdk
 	sed -i 's/\r$//' emsdk emsdk_env.sh
@@ -46,7 +43,7 @@ sed -i '/^[[:space:]]*target_link_options(/,/^[[:space:]]*)/c\
         -sMODULARIZE=1\
         -sEXPORT_ES6=0\
     	-sSINGLE_FILE=1\
-  		-sENVIRONMENT="worker"\
+  		-sENVIRONMENT=worker\
         -sEXPORTED_RUNTIME_METHODS=['FS']\
     )' "source/slang-wasm/CMakeLists.txt"
 
@@ -107,7 +104,7 @@ sed -i '/^[[:space:]]*target_link_options(/,/^[[:space:]]*)/c\
         -sMODULARIZE=1\
         -sEXPORT_ES6=0\
         -sSINGLE_FILE=1\
-        -sENVIRONMENT="node"\
+        -sENVIRONMENT=node\
         -sEXPORTED_RUNTIME_METHODS=['FS']\
     )' "source/slang-wasm/CMakeLists.txt"
 

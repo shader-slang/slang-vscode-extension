@@ -1,9 +1,7 @@
 #!/bin/bash
 
-if [ ! -d emsdk ]
-then
-    git clone https://github.com/emscripten-core/emsdk.git emsdk
-fi
+# Setup pinned emsdk version using shared script
+source ./build_scripts/setup-emsdk.sh
 
 pushd emsdk
 	sed -i 's/\r$//' emsdk emsdk_env.sh
@@ -12,19 +10,16 @@ pushd emsdk
 	source ./emsdk_env.sh
 popd
 
-if [ ! -d spirv-tools ]
-then
-	git clone https://github.com/KhronosGroup/SPIRV-Tools.git spirv-tools
-fi
+# Setup pinned SPIRV Tools version using shared script
+source ./build_scripts/setup-spirv-tools.sh
 
 pushd spirv-tools
-git checkout vulkan-sdk-1.3.290.0
 
 python3 utils/git-sync-deps
 
 # add an additional option to emcc command
 sed -i 's/\r$//' source/wasm/build.sh
-sed -i 's/-s MODULARIZE \\/-s MODULARIZE -s SINGLE_FILE -s ENVIRONMENT="worker"\\/' source/wasm/build.sh
+sed -i 's/-s MODULARIZE \\/-s MODULARIZE -s SINGLE_FILE -s ENVIRONMENT=worker\\/' source/wasm/build.sh
 
 bash -x source/wasm/build.sh
 
@@ -37,7 +32,7 @@ cp ../spirv-tools.d.ts ../spirv-tools.worker.d.ts
 
 # --- Build for Node.js ---
 # Patch build.sh for Node.js build
-sed -i 's/-s ENVIRONMENT="worker"/-s ENVIRONMENT="node"/' source/wasm/build.sh
+sed -i 's/-s ENVIRONMENT=worker/-s ENVIRONMENT=node/' source/wasm/build.sh
 
 bash -x source/wasm/build.sh
 

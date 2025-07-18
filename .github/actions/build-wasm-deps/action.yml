@@ -14,10 +14,7 @@ runs:
       run: |
         sudo apt-get update
         sudo apt-get install -y ninja-build
-        if [ ! -d "emsdk" ]; then
-          git clone https://github.com/emscripten-core/emsdk.git
-          sed -i 's/\r$//' emsdk/emsdk emsdk/emsdk_env.sh
-        fi
+        source ./build_scripts/setup-emsdk.sh
 
     - name: get slang head commit
       shell: bash
@@ -30,12 +27,7 @@ runs:
     - name: get spirv-tool head commit
       shell: bash
       run: |
-        if [ ! -d "spirv-tools" ]; then
-          git clone https://github.com/KhronosGroup/SPIRV-Tools.git spirv-tools
-          pushd spirv-tools
-          git checkout vulkan-sdk-1.3.290.0
-          popd
-        fi
+        source ./build_scripts/setup-spirv-tools.sh
         git -C spirv-tools rev-parse HEAD > key-spirv-tool.txt
 
     - name: restore slang-wasm
