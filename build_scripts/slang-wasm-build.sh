@@ -12,8 +12,15 @@ do
 	fi
 done
 
-# Setup emsdk using shared script
+# Setup pinned emsdk version using shared script
 source ./build_scripts/setup-emsdk.sh
+
+pushd emsdk
+	sed -i 's/\r$//' emsdk emsdk_env.sh
+	/bin/sh ./emsdk install latest
+	/bin/sh ./emsdk activate latest
+	source ./emsdk_env.sh
+popd
 
 echo "[$(date)] Sync slang repo ..."
 if [ ! -d slang-repo ]
