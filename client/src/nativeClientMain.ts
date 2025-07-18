@@ -123,10 +123,13 @@ export async function activate(context: ExtensionContext) {
 		workspace.registerTextDocumentContentProvider('slang-synth', synthCodeProvider)
 	);
 
+	// Initialize language server options, including the implicit playground.slang file.
+	const playgroundUri = vscode.Uri.file(path.join(context.extensionPath, 'server', 'src', 'slang', 'playground.slang'));
+	const playgroundDocument = await vscode.workspace.openTextDocument(playgroundUri);
 	const initializationOptions: ServerInitializationOptions = {
 		extensionUri: context.extensionUri.toString(true),
-		workspaceUris: vscode.workspace.workspaceFolders.map(folder => folder.uri.fsPath),
-		files: await getSlangFilesWithContents(),
+		workspaceUris: vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders.map(folder => folder.uri.fsPath) : [],
+		files: [... await getSlangFilesWithContents(), {uri: playgroundUri.toString(), content: playgroundDocument.getText() }]
 	}
 	worker = new Worker(path.join(context.extensionPath, 'server', 'dist', 'nativeServerMain.js'), {
 		workerData: initializationOptions
