@@ -5,7 +5,8 @@
 		"vscode": "^1.85.0"
 	},
 	"dependencies": {
-		"vscode-languageclient": "^9.0.1"
+		"vscode-languageclient": "^9.0.1",
+		"slang-playground-shared": "file:../external/slang-playground/engine/shared"
 	},
 	"devDependencies": {
 		"@types/vscode": "^1.85.0",

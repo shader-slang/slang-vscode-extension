@@ -231,10 +231,10 @@
             }
         ]
     },
-    "workspaces": ["client", "server", "shared", "uniform_webview", "webview"],
+    "workspaces": ["client", "server", "uniform_webview", "webview"],
     "scripts": {
         "vscode:prepublish": "npm run compile",
-        "compile": "node esbuild.config.mjs",
+        "compile": "npm --prefix ./external/slang-playground/engine run build && node esbuild.config.mjs",
         "watch": "esbuild --config=esbuild.config.mjs --watch",
         "package": "node esbuild.config.mjs",
         "chrome": "npm run compile && vscode-test-web --browserType=chromium --browserOption=--enable-unsafe-webgpu --extensionDevelopmentPath=. ./test-data"

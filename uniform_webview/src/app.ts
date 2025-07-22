@@ -1,4 +1,4 @@
 import { createApp } from 'vue';
-import UniformPanel from './UniformPanel.vue';
+import UniformPanel from './App.vue';
 
 createApp(UniformPanel).mount('#app')

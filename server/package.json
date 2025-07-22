@@ -11,7 +11,9 @@
 	},
 	"dependencies": {
 		"vscode-languageserver": "^9.0.1",
-		"vscode-languageserver-textdocument": "^1.0.11"
+		"vscode-languageserver-textdocument": "^1.0.11",
+		"slang-playground-shared": "file:../external/slang-playground/engine/shared",
+		"slang-compilation-engine": "file:../external/slang-playground/engine/slang-compilation-engine"
 	},
 	"devDependencies": {
 		"@types/emscripten": "^1.39.13",
