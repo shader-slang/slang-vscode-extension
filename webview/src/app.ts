@@ -1,6 +1,4 @@
 import { createApp } from 'vue';
-import RenderCanvas from './RenderCanvas.vue';
+import App from './App.vue';
 
-createApp(RenderCanvas, {
-    showFullscreenToggle: false
-}).mount('#app')
+createApp(App).mount('#app');

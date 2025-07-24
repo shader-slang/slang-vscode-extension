@@ -6,10 +6,9 @@ import { TextDocument } from 'vscode-languageserver-textdocument';
 import createModule from '../../media/slang-wasm.worker.js';
 import type { LanguageServer, MainModule, CompletionContext, DocumentSymbol as WasmDocumentSymbol } from '../../media/slang-wasm.worker';
 import spirvTools from '../../media/spirv-tools.worker.js';
-import type { CompileRequest, EntrypointsRequest, EntrypointsResult, Result, ServerInitializationOptions, Shader } from '../../shared/playgroundInterface';
-import playgroundSource from "./slang/playground.slang";
+import type { CompiledPlayground, EntrypointsResult, Result, ServerInitializationOptions, Shader, WorkerRequest } from 'slang-playground-shared';
 import { DiagnosticSeverity } from 'vscode-languageserver';
-import { SlangCompiler } from './compiler';
+import { PLAYGROUND_SOURCE, SlangCompiler, compilePlayground } from 'slang-compilation-engine';
 import { modifyEmscriptenFile, getEmscriptenURI, getSlangdURI, removePrefix } from './lspSharedUtils.js';
 
 // We'll set these after dynamic import
@@ -239,8 +238,8 @@ function openPlayground(wasmURI: string) {
     }
     const emscriptenPlaygroundURI = removePrefix(playgroundURI, "file://");
     loadedPlaygroundFiles.add(playgroundURI);
-    slangd.didOpenTextDocument(playgroundURI, playgroundSource);
-    loadFileIntoEmscriptenFS(emscriptenPlaygroundURI, playgroundSource);
+    slangd.didOpenTextDocument(playgroundURI, PLAYGROUND_SOURCE);
+    loadFileIntoEmscriptenFS(emscriptenPlaygroundURI, PLAYGROUND_SOURCE);
 }
 
 function reportDiagnostics(uri: string) {
@@ -303,11 +302,16 @@ connection.onDidCloseTextDocument(async (params) => {
     slangd.didCloseTextDocument(wasmURI);
 });
 
-connection.onRequest('slang/compile', async (params: CompileRequest): Promise<Result<Shader>> => {
-    return await compiler.compile(params, initializationOptions.workspaceUris, spirvTools);
+connection.onRequest('slang/compile', async (params: WorkerRequest & { type: 'slang/compile' }): Promise<Result<Shader>> => {
+    const shaderPath = getEmscriptenURI(params.shaderPath, initializationOptions.workspaceUris);
+    return await compiler.compile(params, shaderPath, initializationOptions.workspaceUris, spirvTools);
+});
+connection.onRequest('slang/compilePlayground', async (params: WorkerRequest & { type: 'slang/compilePlayground' }): Promise<Result<CompiledPlayground>> => {
+    const shaderPath = getEmscriptenURI(params.shaderPath, initializationOptions.workspaceUris);
+    return compilePlayground(await compiler.compile(params, shaderPath, initializationOptions.workspaceUris, spirvTools), params.uri, params.entrypoint);
 });
 
-connection.onRequest('slang/entrypoints', async (params: EntrypointsRequest): Promise<Result<EntrypointsResult>> => {
+connection.onRequest('slang/entrypoints', async (params: WorkerRequest & { type: 'slang/entrypoints' }): Promise<Result<EntrypointsResult>> => {
     let path = getEmscriptenURI(params.shaderPath, initializationOptions.workspaceUris);
     return compiler.findDefinedEntryPoints(params.sourceCode, path)
 });

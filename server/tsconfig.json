@@ -16,9 +16,10 @@
 	},
 	"include": [
 		"src",
-		"../media/slang-wasm.d.ts",
-		"../media/slang-wasm.js",
-		"../shared/util.ts"
+		"../media/slang-wasm.worker.d.ts",
+		"../media/slang-wasm.node.d.ts",
+		"../media/slang-wasm.worker.js",
+		"../media/slang-wasm.node.js"
 	],
 	"exclude": [
 		"node_modules",

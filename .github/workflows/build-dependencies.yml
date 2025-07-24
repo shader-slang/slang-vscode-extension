@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
 
       - name: Build and cache WASM dependencies
         uses: ./.github/actions/build-wasm-deps
