@@ -239,7 +239,7 @@
         "external/slang-playground/engine/*"
     ],
     "scripts": {
-        "preinstall": "npm --prefix ./external/slang-playground/engine run build",
+        "preinstall": "npm --prefix ./external/slang-playground run build-engine",
         "vscode:prepublish": "npm run compile",
         "compile": "node esbuild.config.mjs",
         "watch": "esbuild --config=esbuild.config.mjs --watch",

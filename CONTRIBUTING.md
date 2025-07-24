@@ -50,3 +50,7 @@ You can also run and debug the extension in a browser
 
 * `npm run chrome`
 * Use browser dev tools to set breakpoints
+
+## Updating slang-playground
+
+Use `git submodule update --remote --merge` to update the slang-playground submodule.
