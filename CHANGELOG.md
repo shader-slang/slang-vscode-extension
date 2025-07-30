@@ -1,7 +1,12 @@
 # Change Log
 
-# v1.10.1
+# v2.0.0
 - Update to Slang v2025.13.2.
+- Add Slang Playground Featuers
+  - Run shaders
+  - Compile shaders
+  - Get reflection information
+- Added browser support
 
 # v1.10.0
 - Fixes highlighting, hover, and signature info for constructor calls.
