@@ -3,7 +3,7 @@
     "displayName": "Slang",
     "description": "Extension for the Slang Shading Language",
     "publisher": "shader-slang",
-    "version": "1.10.1",
+    "version": "2.0.0",
     "icon": "./images/icon.png",
     "engines": {
         "vscode": "^1.85.0"
