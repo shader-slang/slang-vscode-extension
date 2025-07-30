@@ -1,4 +1,7 @@
 # Change Log
+# v1.10.1
+- Updage to Slang v2025.13.2.
+
 # v1.10.0
 - Fixes highlighting, hover, and signature info for constructor calls.
 - Signature help now automatically selects the best candidate.
