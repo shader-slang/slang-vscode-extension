@@ -10,8 +10,7 @@ import {
 	TransportKind
 } from 'vscode-languageclient/node';
 import { Worker } from 'worker_threads';
-import { CompileRequest, EntrypointsRequest, EntrypointsResult, Result, ServerInitializationOptions, Shader, WorkerRequest } from '../../shared/playgroundInterface';
-import { PlaygroundImportQuickFixProvider } from './native/playgroundQuickFix';
+import { CompiledPlayground, CompileRequest, EntrypointsRequest, EntrypointsResult, Result, ServerInitializationOptions, Shader, WorkerRequest } from 'slang-playground-shared';
 import { getSlangdLocation } from './native/slangd';
 import { SlangSynthesizedCodeProvider } from './native/synth_doc_provider';
 import { getSlangFilesWithContents, sharedActivate } from './sharedClient';
@@ -57,41 +56,6 @@ function sendDidChangeTextDocument(event: vscode.TextDocumentChangeEvent) {
 }
 
 export async function activate(context: ExtensionContext) {
-	// Register quick fix provider for playground import errors
-	context.subscriptions.push(
-		vscode.languages.registerCodeActionsProvider(
-			{ language: 'slang', scheme: 'file' },
-			new PlaygroundImportQuickFixProvider(),
-			{ providedCodeActionKinds: PlaygroundImportQuickFixProvider.providedCodeActionKinds }
-		)
-	);
-
-	// Register command to create playground.slang if missing
-	context.subscriptions.push(
-		vscode.commands.registerCommand('slang.createPlaygroundSlang', async (uri: vscode.Uri) => {
-			const dir = path.dirname(uri.fsPath);
-			const playgroundPath = path.join(dir, 'playground.slang');
-			if (fs.existsSync(playgroundPath)) {
-				vscode.window.showInformationMessage('playground.slang already exists in this directory.');
-				return;
-			}
-			// Copy from extension's server/src/slang/playground.slang
-			let srcPath = path.join(context.extensionPath, 'server', 'src', 'slang', 'playground.slang');
-			// Fallback if running from source
-			if (!fs.existsSync(srcPath)) {
-				srcPath = path.join(__dirname, '../../server/src/slang/playground.slang');
-			}
-			if (!fs.existsSync(srcPath)) {
-				vscode.window.showErrorMessage('Could not find playground.slang template in extension.');
-				return;
-			}
-			fs.copyFileSync(srcPath, playgroundPath);
-			vscode.window.showInformationMessage('playground.slang created in this directory.');
-			// Optionally open the new file
-			const doc = await vscode.workspace.openTextDocument(playgroundPath);
-			vscode.window.showTextDocument(doc);
-		})
-	);
 	const serverModule = getSlangdLocation(context);
 	const serverOptions: ServerOptions = {
 		run: { command: serverModule, transport: TransportKind.stdio },
@@ -124,7 +88,7 @@ export async function activate(context: ExtensionContext) {
 	);
 
 	// Initialize language server options, including the implicit playground.slang file.
-	const playgroundUri = vscode.Uri.file(path.join(context.extensionPath, 'server', 'src', 'slang', 'playground.slang'));
+	const playgroundUri = vscode.Uri.file(path.join(context.extensionPath, 'external', 'slang-playground', 'engine', 'slang-compilation-engine', 'src', 'slang', 'playground.slang'));
 	const playgroundDocument = await vscode.workspace.openTextDocument(playgroundUri);
 	const initializationOptions: ServerInitializationOptions = {
 		extensionUri: context.extensionUri.toString(true),
@@ -147,11 +111,15 @@ export async function activate(context: ExtensionContext) {
 			sendMessageToWorker({ type: 'slang/compile', ...parameter });
 			return new Promise((resolve, reject) => {
 				worker.once('message', (result: Result<Shader>) => {
-					if (result.succ == true) {
-						resolve(result);
-					} else {
-						reject(new Error(result.message));
-					}
+					resolve(result);
+				});
+			});
+		},
+		compilePlayground: function (parameter: CompileRequest & { uri: string }): Promise<Result<CompiledPlayground>> {
+			sendMessageToWorker({ type: 'slang/compilePlayground', ...parameter });
+			return new Promise((resolve, reject) => {
+				worker.once('message', (result: Result<CompiledPlayground>) => {
+					resolve(result);
 				});
 			});
 		},

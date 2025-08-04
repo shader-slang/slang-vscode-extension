@@ -8,11 +8,9 @@ function getSlangLogChannel(): vscode.OutputChannel {
 	}
 	return slangLogChannel;
 }
-import { LanguageClientOptions } from 'vscode-languageclient';
 
-import { LanguageClient } from 'vscode-languageclient/browser';
-import type { CompileRequest, EntrypointsRequest, EntrypointsResult, PlaygroundMessage, Result, Shader } from '../../shared/playgroundInterface';
-import { checkShaderType, getResourceCommandsFromAttributes, getUniformControllers, getUniformSize, isControllerRendered, parseCallCommands } from "../../shared/util.js";
+import type { CompiledPlayground, CompileRequest, EntrypointsRequest, EntrypointsResult, PlaygroundMessage, Result, Shader, UniformController } from 'slang-playground-shared';
+import { isControllerRendered, RUNNABLE_ENTRY_POINT_NAMES } from "slang-playground-shared";
 
 // Maps to track open panels by file URI and command type
 const playgroundPanels = new Map<string, vscode.WebviewPanel>();
@@ -73,6 +71,7 @@ export async function getSlangFilesWithContents(): Promise<{ uri: string, conten
 
 export type SlangHandler = {
 	compileShader: (parameter: CompileRequest) => Promise<Result<Shader>>;
+	compilePlayground: (parameter: CompileRequest & { uri: string }) => Promise<Result<CompiledPlayground>>;
 	entrypoints: (parameter: EntrypointsRequest) => Promise<EntrypointsResult>;
 };
 
@@ -88,12 +87,13 @@ export async function sharedActivate(context: ExtensionContext, slangHandler: Sl
 				vscode.window.showErrorMessage("Error: In order to run the shader, please define either imageMain or printMain function in the shader code.");
 				return;
 			}
-			const compileResult = await slangHandler.compileShader({
+			const compileResult = await slangHandler.compilePlayground({
 				target: "WGSL",
 				entrypoint: shaderType,
 				sourceCode: userSource,
 				shaderPath: window.activeTextEditor.document.uri.toString(false),
 				noWebGPU: false,
+				uri: userURI.toString(),
 			});
 			if (compileResult.succ == false) {
 				const logChannel = getSlangLogChannel();
@@ -105,30 +105,6 @@ export async function sharedActivate(context: ExtensionContext, slangHandler: Sl
 				return;
 			}
 			const compilation = compileResult.result;
-
-			let resourceCommandsResult = getResourceCommandsFromAttributes(compilation.reflection);
-			if (resourceCommandsResult.succ == false) {
-				const logChannel = getSlangLogChannel();
-				vscode.window.showErrorMessage("Error while parsing Resource commands: " + resourceCommandsResult.message);
-				if (resourceCommandsResult.log) {
-					logChannel.appendLine(resourceCommandsResult.log);
-					logChannel.show(true);
-				}
-				return;
-			}
-			let uniformSize = getUniformSize(compilation.reflection)
-			let uniformComponents = getUniformControllers(resourceCommandsResult.result)
-
-			let callCommandResult = parseCallCommands(compilation.reflection);
-			if (callCommandResult.succ == false) {
-				const logChannel = getSlangLogChannel();
-				vscode.window.showErrorMessage("Error while parsing CALL commands: " + callCommandResult.message);
-				if (callCommandResult.log) {
-					logChannel.appendLine(callCommandResult.log);
-					logChannel.show(true);
-				}
-				return;
-			}
 
 			// Key for this file/run
 			const playgroundKey = userURI.toString() + ':playground';
@@ -172,20 +148,11 @@ export async function sharedActivate(context: ExtensionContext, slangHandler: Sl
 
 			let message: PlaygroundMessage = {
 				type: "init",
-				payload: {
-					slangSource: userSource,
-					callCommands: callCommandResult.result,
-					mainEntryPoint: shaderType,
-					resourceCommands: resourceCommandsResult.result,
-					uniformComponents,
-					uniformSize,
-					shader: compilation,
-					uri: panel.webview.asWebviewUri(userURI).toString(),
-				},
+				payload: compilation,
 			};
 			panel.webview.postMessage(message)
 
-			if (uniformComponents.some(isControllerRendered)) {
+			if (compilation.uniformComponents.some(isControllerRendered)) {
 				const uniformKey = userURI.toString() + ':uniform';
 				if (uniformPanels.has(uniformKey)) {
 					try { uniformPanels.get(uniformKey)!.dispose(); } catch { }
@@ -214,7 +181,7 @@ export async function sharedActivate(context: ExtensionContext, slangHandler: Sl
 				});
 				uniform_panel.webview.postMessage({
 					type: "init",
-					uniformComponents,
+					uniformComponents: compilation.uniformComponents,
 				})
 
 				panel.onDidDispose(() => {
@@ -338,10 +305,12 @@ export async function sharedActivate(context: ExtensionContext, slangHandler: Sl
 	}));
 }
 
-export function getWebviewContent(context: ExtensionContext, panel: vscode.WebviewPanel, scriptPath: string, stylePath: string): string {
+	export function getWebviewContent(context: ExtensionContext, panel: vscode.WebviewPanel, scriptPath: string, stylePath: string): string {
 	// Webview HTML with script tag for the esbuild webview bundle
 	const webviewMain = panel.webview.asWebviewUri(Uri.joinPath(context.extensionUri, scriptPath));
 	const webviewStyle = panel.webview.asWebviewUri(Uri.joinPath(context.extensionUri, stylePath));
+	const vueSrc = panel.webview.asWebviewUri(Uri.joinPath(context.extensionUri, 'node_modules/vue/dist/vue.esm-browser.prod.js'));
+
 	return `
 	<!DOCTYPE html>
 	<html lang="en">
@@ -350,6 +319,13 @@ export function getWebviewContent(context: ExtensionContext, panel: vscode.Webvi
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title>Slang Playground</title>
       	<link rel="stylesheet" href="${webviewStyle.toString(true)}">
+		<script type="importmap">
+			{
+				"imports": {
+					"vue": "${vueSrc.toString(true)}"
+				}
+			}
+		</script>
 		<script type="module" src="${webviewMain.toString(true)}"></script>
 		<style>
 			#app {
@@ -368,4 +344,16 @@ export function getWebviewContent(context: ExtensionContext, panel: vscode.Webvi
 	</body>
 	</html>
 `;
+}
+
+export function checkShaderType(userSource: string) {
+    // we did a pre-filter on the user input source code.
+    let shaderTypes = RUNNABLE_ENTRY_POINT_NAMES.filter((entryPoint) => userSource.includes(entryPoint));
+
+    // Only one of the main function should be defined.
+    // In this case, we will know that the shader is not runnable, so we can only compile it.
+    if (shaderTypes.length !== 1)
+        return null;
+
+    return shaderTypes[0];
 }

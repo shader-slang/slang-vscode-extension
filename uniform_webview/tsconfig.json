@@ -15,12 +15,10 @@
     	"moduleResolution": "bundler"
 	},
 	"include": [
-		"src",
-		"../shared/util.ts"
+		"src"
 	],
 	"exclude": [
 		"node_modules",
 		".vscode-test-web"
-	],
-  	"references": [{ "path": "../shared/tsconfig.json" }]
+	]
 }
