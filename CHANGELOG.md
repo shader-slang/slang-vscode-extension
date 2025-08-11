@@ -1,5 +1,8 @@
 # Change Log
 
+# v2.0.1
+- Update to Slang v2025.14.3.
+
 # v2.0.0
 - Update to Slang v2025.13.2.
 - Add Slang Playground Featuers
