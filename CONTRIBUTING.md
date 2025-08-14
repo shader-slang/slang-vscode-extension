@@ -4,6 +4,14 @@ This project welcomes contributions and suggestions. Contributions require you t
 
 When you submit a pull request, a CLA bot will determine whether you need to sign a CLA. Simply follow the instructions provided.
 
+## Cloning
+
+To get this project run:
+
+```sh
+git clone --recurse-submodules https://github.com/shader-slang/slang-vscode-extension
+```
+
 ## Getting dependencies
 
 First you need to get certain prerequisite files to run the project.
@@ -29,32 +37,20 @@ This should produce the following files:
 
 Move them into the `media` directory.
 
-## Structure
-
-```plaintext
-.
-├── client // Language Client
-│   └── src
-│       └── browserClientMain.ts // Language Client entry point
-├── package.json // The extension manifest.
-├── server // Language Server
-|   └── src
-|       └── browserServerMain.ts // Language Server entry point
-└── webview // Webview for playground runs. Runs WebGPU
-    └── src
-        └── app.ts // Vue entry point
-```
-
 ## Running the Sample
 
-- Run `npm install` in this folder. This installs all necessary npm modules in both the client and server folder
-- Open VS Code on this folder.
-- Press Ctrl+Shift+B to compile the client and server.
-- Switch to the Debug viewlet.
-- Select `Run Web Extension` from the drop down.
-- Run the launch config.
+* Run `npm install` in this folder. This installs all necessary npm modules for all builds and builds playground libraries
+* Open VS Code on this folder.
+* Press Ctrl+Shift+B to compile the client and server.
+* Switch to the Debug viewlet.
+* Select `Run Web Extension` or `Run Native Extension` from the drop down.
+* Run the launch config.
 
 You can also run and debug the extension in a browser
 
-- `npm run chrome`
-- use browser dev tools to set breakpoints
+* `npm run chrome`
+* Use browser dev tools to set breakpoints
+
+## Updating slang-playground
+
+Use `git submodule update --remote --merge` to update the slang-playground submodule.
