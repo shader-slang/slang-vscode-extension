@@ -308,7 +308,11 @@ connection.onRequest('slang/compile', async (params: WorkerRequest & { type: 'sl
 });
 connection.onRequest('slang/compilePlayground', async (params: WorkerRequest & { type: 'slang/compilePlayground' }): Promise<Result<CompiledPlayground>> => {
     const shaderPath = getEmscriptenURI(params.shaderPath, initializationOptions.workspaceUris);
-    return compilePlayground(await compiler.compile(params, shaderPath, initializationOptions.workspaceUris, spirvTools), params.uri, params.entrypoint);
+    const compilationResult = await compiler.compile(params, shaderPath, initializationOptions.workspaceUris, spirvTools);
+    if (compilationResult.succ === false) {
+        return compilationResult;
+    }
+    return compilePlayground(compilationResult.result, params.uri, params.entrypoint);
 });
 
 connection.onRequest('slang/entrypoints', async (params: WorkerRequest & { type: 'slang/entrypoints' }): Promise<Result<EntrypointsResult>> => {

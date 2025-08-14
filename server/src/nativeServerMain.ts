@@ -131,7 +131,11 @@ async function slangCompile(params: WorkerRequest & { type: 'slang/compile' }) {
 
 async function slangCompilePlayground(params: WorkerRequest & { type: 'slang/compilePlayground' }) {
     const shaderPath = getEmscriptenURI(params.shaderPath, initializationOptions.workspaceUris);
-    parentPort!.postMessage(compilePlayground(await compiler.compile(params, shaderPath, initializationOptions.workspaceUris, spirvTools), params.uri, params.entrypoint));
+    const compilationResult = await compiler.compile(params, shaderPath, initializationOptions.workspaceUris, spirvTools);
+    if (compilationResult.succ === false) {
+        return compilationResult;
+    }
+    parentPort!.postMessage(compilePlayground(compilationResult.result, params.uri, params.entrypoint));
 }
 
 async function slangEntrypoints(params: EntrypointsRequest) {
