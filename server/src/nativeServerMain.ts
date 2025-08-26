@@ -2,9 +2,8 @@
 import createModule from '../../media/slang-wasm.node.js';
 import type { MainModule } from '../../media/slang-wasm.node.js';
 import spirvTools from '../../media/spirv-tools.node.js';
-import type { EntrypointsRequest, Result, ServerInitializationOptions, WorkerRequest } from '../../shared/playgroundInterface.js';
-import playgroundSource from "./slang/playground.slang";
-import { SlangCompiler } from './compiler.js';
+import type { EntrypointsRequest, Result, ServerInitializationOptions, WorkerRequest } from 'slang-playground-shared';
+import { SlangCompiler, compilePlayground, PLAYGROUND_SOURCE } from 'slang-compilation-engine';
 import { modifyEmscriptenFile, getEmscriptenURI, getSlangdURI, removePrefix } from './lspSharedUtils.js';
 import { parentPort } from 'worker_threads';
 // We'll set these after dynamic import
@@ -60,6 +59,9 @@ parentPort!.on("message", async (params: WorkerRequest) => {
         case 'slang/compile':
             await slangCompile(params);
             break;
+        case 'slang/compilePlayground':
+            await slangCompilePlayground(params);
+            break;
         case 'slang/entrypoints':
             await slangEntrypoints(params);
             break;
@@ -104,7 +106,7 @@ function openPlayground(wasmURI: string) {
     }
     const emscriptenPlaygroundURI = removePrefix(playgroundURI, "file://");
     loadedPlaygroundFiles.add(playgroundURI);
-    loadFileIntoEmscriptenFS(emscriptenPlaygroundURI, playgroundSource);
+    loadFileIntoEmscriptenFS(emscriptenPlaygroundURI, PLAYGROUND_SOURCE);
 }
 
 async function DidOpenTextDocument(params: WorkerRequest & { type: 'DidOpenTextDocument' }) {
@@ -123,7 +125,17 @@ async function DidChangeTextDocument(params: WorkerRequest & { type: 'DidChangeT
 }
 
 async function slangCompile(params: WorkerRequest & { type: 'slang/compile' }) {
-    parentPort!.postMessage(await compiler.compile(params, initializationOptions.workspaceUris, spirvTools));
+    const shaderPath = getEmscriptenURI(params.shaderPath, initializationOptions.workspaceUris);
+    parentPort!.postMessage(await compiler.compile(params, shaderPath, initializationOptions.workspaceUris, spirvTools));
+}
+
+async function slangCompilePlayground(params: WorkerRequest & { type: 'slang/compilePlayground' }) {
+    const shaderPath = getEmscriptenURI(params.shaderPath, initializationOptions.workspaceUris);
+    const compilationResult = await compiler.compile(params, shaderPath, initializationOptions.workspaceUris, spirvTools);
+    if (compilationResult.succ === false) {
+        return compilationResult;
+    }
+    parentPort!.postMessage(compilePlayground(compilationResult.result, params.uri, params.entrypoint));
 }
 
 async function slangEntrypoints(params: EntrypointsRequest) {

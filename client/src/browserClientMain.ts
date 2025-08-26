@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 import { LanguageClientOptions } from 'vscode-languageclient';
 
 import { LanguageClient } from 'vscode-languageclient/browser';
-import type { CompileRequest, EntrypointsRequest, EntrypointsResult, Result, ServerInitializationOptions, Shader } from '../../shared/playgroundInterface';
+import type { CompiledPlayground, CompileRequest, EntrypointsRequest, EntrypointsResult, Result, ServerInitializationOptions, Shader } from 'slang-playground-shared';
 import { getSlangFilesWithContents, sharedActivate } from './sharedClient';
 
 let client: LanguageClient;
@@ -32,6 +32,9 @@ export async function activate(context: ExtensionContext) {
 	sharedActivate(context, {
 		compileShader: function (parameter: CompileRequest): Promise<Result<Shader>> {
 			return client.sendRequest('slang/compile', parameter);
+		},
+		compilePlayground: function (parameter: CompileRequest): Promise<Result<CompiledPlayground>> {
+			return client.sendRequest('slang/compilePlayground', parameter);
 		},
 		entrypoints: function (parameter: EntrypointsRequest): Promise<EntrypointsResult> {
 			return client.sendRequest('slang/entrypoints', parameter);

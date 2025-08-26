@@ -79,7 +79,7 @@ async function buildAll() {
 			tsconfig: 'webview/tsconfig.json',
 			define: { 'process.env.NODE_ENV': '"production"' },
 			plugins: [vuePlugin()],
-			external: [],
+			external: ['vue'],
 		});
 
 		// Build uniform webview bundle
@@ -94,7 +94,7 @@ async function buildAll() {
 			tsconfig: 'uniform_webview/tsconfig.json',
 			define: { 'process.env.NODE_ENV': '"production"' },
 			plugins: [vuePlugin()],
-			external: [],
+			external: ['vue'],
 		});
 	} catch (err) {
 		// Use globalThis.console for ESM compatibility

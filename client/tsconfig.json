@@ -1,6 +1,6 @@
 {
 	"compilerOptions": {
-		"module": "commonjs",
+		"module": "esnext",
 		"target": "es2020",
 		"lib": [
 			"es2020",
@@ -11,15 +11,14 @@
 		"types": [
 			"@webgpu/types",
 			"@types/node",
-		]
+		],
+        "moduleResolution": "bundler"
 	},
 	"include": [
-		"src",
-		"../shared/util.ts"
+		"src"
 	],
 	"exclude": [
 		"node_modules",
 		".vscode-test-web"
-	],
-  	"references": [{ "path": "../shared/tsconfig.json" }]
+	]
 }

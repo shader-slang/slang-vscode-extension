@@ -6,7 +6,9 @@
 		"vscode": "^1.85.0"
 	},
 	"dependencies": {
-		"vue": "^3.5.17"
+		"vue": "^3.5.17",
+		"slang-playground-shared": "0.0.1",
+		"playground-render-canvas": "0.0.1"
 	},
 	"devDependencies": {
 		"@types/vscode": "^1.85.0",
