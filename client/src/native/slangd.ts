@@ -4,9 +4,13 @@ import { workspace, ExtensionContext } from 'vscode';
 
 export function getSlangdLocation(context: ExtensionContext): string {
     let slangdLoc = workspace.getConfiguration("slang").get("slangdLocation", "");
-    if (slangdLoc === "") slangdLoc = context.asAbsolutePath(
-        path.join('server', 'bin', process.platform + '-' + process.arch, 'slangd')
-    );
+    if (slangdLoc === "")
+    {
+        let slangdName = process.platform === 'win32' ? 'slangd.exe' : 'slangd';
+        slangdLoc = context.asAbsolutePath(
+            path.join('server', 'bin', process.platform + '-' + process.arch, slangdName)
+        );
+    }
     return fs.existsSync(slangdLoc) ? slangdLoc : 'slangd';
 }
 
