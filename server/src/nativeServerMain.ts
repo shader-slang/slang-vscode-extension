@@ -3,7 +3,7 @@ import createModule from '../../media/slang-wasm.node.js';
 import type { MainModule } from '../../media/slang-wasm.node.js';
 import spirvTools from '../../media/spirv-tools.node.js';
 import type { EntrypointsRequest, Result, ServerInitializationOptions, WorkerRequest } from 'slang-playground-shared';
-import { SlangCompiler, compilePlayground, PLAYGROUND_SOURCE } from 'slang-compilation-engine';
+import { SlangCompiler, compilePlayground, PLAYGROUND_SOURCE_FILES } from 'slang-compilation-engine';
 import { modifyEmscriptenFile, getEmscriptenURI, getSlangdURI, removePrefix } from './lspSharedUtils.js';
 import { parentPort } from 'worker_threads';
 // We'll set these after dynamic import
@@ -100,13 +100,16 @@ const loadedPlaygroundFiles: Set<string> = new Set();
 function openPlayground(wasmURI: string) {
     let splitUri = wasmURI.split('/');
     splitUri.pop(); // Remove the file name
-    const playgroundURI = splitUri.join('/') + '/playground.slang';
-    if (loadedPlaygroundFiles.has(playgroundURI)) {
-        return; // Already opened
+    for(const playgroundFile in PLAYGROUND_SOURCE_FILES) {
+        const playgroundFileSource = PLAYGROUND_SOURCE_FILES[playgroundFile];
+        const playgroundURI = splitUri.join('/') + `/${playgroundFile}.slang`;
+        if (loadedPlaygroundFiles.has(playgroundURI)) {
+            return; // Already opened
+        }
+        const emscriptenPlaygroundURI = removePrefix(playgroundURI, "file://");
+        loadedPlaygroundFiles.add(playgroundURI);
+        loadFileIntoEmscriptenFS(emscriptenPlaygroundURI, playgroundFileSource);
     }
-    const emscriptenPlaygroundURI = removePrefix(playgroundURI, "file://");
-    loadedPlaygroundFiles.add(playgroundURI);
-    loadFileIntoEmscriptenFS(emscriptenPlaygroundURI, PLAYGROUND_SOURCE);
 }
 
 async function DidOpenTextDocument(params: WorkerRequest & { type: 'DidOpenTextDocument' }) {
@@ -135,7 +138,7 @@ async function slangCompilePlayground(params: WorkerRequest & { type: 'slang/com
     if (compilationResult.succ === false) {
         return compilationResult;
     }
-    parentPort!.postMessage(compilePlayground(compilationResult.result, params.uri, params.entrypoint));
+    parentPort!.postMessage(compilePlayground(compilationResult.result, params.uri));
 }
 
 async function slangEntrypoints(params: EntrypointsRequest) {

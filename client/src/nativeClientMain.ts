@@ -87,13 +87,25 @@ export async function activate(context: ExtensionContext) {
 		workspace.registerTextDocumentContentProvider('slang-synth', synthCodeProvider)
 	);
 
-	// Initialize language server options, including the implicit playground.slang file.
-	const playgroundUri = vscode.Uri.file(path.join(context.extensionPath, 'external', 'slang-playground', 'engine', 'slang-compilation-engine', 'src', 'slang', 'playground.slang'));
-	const playgroundDocument = await vscode.workspace.openTextDocument(playgroundUri);
+	// Initialize language server options, including the implicit playground.slang file and other embedded slang files.
+	const slangDir = path.join(context.extensionPath, 'external', 'slang-playground', 'engine', 'slang-compilation-engine', 'src', 'slang');
+	let embeddedSlangFiles: { uri: string, content: string }[] = [];
+	if (fs.existsSync(slangDir)) {
+		const names = fs.readdirSync(slangDir);
+		for (const name of names) {
+			if(!name.endsWith(".slang")) continue;
+			const fileUri = vscode.Uri.file(path.join(slangDir, name));
+			const fileDocument = await vscode.workspace.openTextDocument(fileUri);
+			embeddedSlangFiles.push({ uri: fileUri.toString(), content: fileDocument.getText() });
+		}
+	}
 	const initializationOptions: ServerInitializationOptions = {
 		extensionUri: context.extensionUri.toString(true),
 		workspaceUris: vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders.map(folder => folder.uri.fsPath) : [],
-		files: [... await getSlangFilesWithContents(), {uri: playgroundUri.toString(), content: playgroundDocument.getText() }]
+		files: [
+			... await getSlangFilesWithContents(),
+			...embeddedSlangFiles
+		]
 	}
 	worker = new Worker(path.join(context.extensionPath, 'server', 'dist', 'nativeServerMain.js'), {
 		workerData: initializationOptions

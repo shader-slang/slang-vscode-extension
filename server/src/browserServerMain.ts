@@ -8,7 +8,7 @@ import type { LanguageServer, MainModule, CompletionContext, DocumentSymbol as W
 import spirvTools from '../../media/spirv-tools.worker.js';
 import type { CompiledPlayground, EntrypointsResult, Result, ServerInitializationOptions, Shader, WorkerRequest } from 'slang-playground-shared';
 import { DiagnosticSeverity } from 'vscode-languageserver';
-import { PLAYGROUND_SOURCE, SlangCompiler, compilePlayground } from 'slang-compilation-engine';
+import { PLAYGROUND_SOURCE_FILES, SlangCompiler, compilePlayground } from 'slang-compilation-engine';
 import { modifyEmscriptenFile, getEmscriptenURI, getSlangdURI, removePrefix } from './lspSharedUtils.js';
 
 // We'll set these after dynamic import
@@ -232,14 +232,17 @@ const loadedPlaygroundFiles: Set<string> = new Set();
 function openPlayground(wasmURI: string) {
     let splitUri = wasmURI.split('/');
     splitUri.pop(); // Remove the file name
-    const playgroundURI = splitUri.join('/') + '/playground.slang';
-    if (loadedPlaygroundFiles.has(playgroundURI)) {
-        return; // Already opened
+    for(const playgroundFile in PLAYGROUND_SOURCE_FILES) {
+        const playgroundFileSource = PLAYGROUND_SOURCE_FILES[playgroundFile];
+        const playgroundURI = splitUri.join('/') + `/${playgroundFile}.slang`;
+        if (loadedPlaygroundFiles.has(playgroundURI)) {
+            return; // Already opened
+        }
+        const emscriptenPlaygroundURI = removePrefix(playgroundURI, "file://");
+        loadedPlaygroundFiles.add(playgroundURI);
+        slangd.didOpenTextDocument(playgroundURI, playgroundFileSource);
+        loadFileIntoEmscriptenFS(emscriptenPlaygroundURI, playgroundFileSource);
     }
-    const emscriptenPlaygroundURI = removePrefix(playgroundURI, "file://");
-    loadedPlaygroundFiles.add(playgroundURI);
-    slangd.didOpenTextDocument(playgroundURI, PLAYGROUND_SOURCE);
-    loadFileIntoEmscriptenFS(emscriptenPlaygroundURI, PLAYGROUND_SOURCE);
 }
 
 function reportDiagnostics(uri: string) {
@@ -312,7 +315,7 @@ connection.onRequest('slang/compilePlayground', async (params: WorkerRequest & {
     if (compilationResult.succ === false) {
         return compilationResult;
     }
-    return compilePlayground(compilationResult.result, params.uri, params.entrypoint);
+    return compilePlayground(compilationResult.result, params.uri);
 });
 
 connection.onRequest('slang/entrypoints', async (params: WorkerRequest & { type: 'slang/entrypoints' }): Promise<Result<EntrypointsResult>> => {

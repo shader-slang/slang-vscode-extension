@@ -9,8 +9,8 @@ function getSlangLogChannel(): vscode.OutputChannel {
 	return slangLogChannel;
 }
 
-import type { CompiledPlayground, CompileRequest, EntrypointsRequest, EntrypointsResult, PlaygroundMessage, Result, Shader, UniformController } from 'slang-playground-shared';
-import { isControllerRendered, RUNNABLE_ENTRY_POINT_NAMES } from "slang-playground-shared";
+import type { CompiledPlayground, CompileRequest, EntrypointsRequest, EntrypointsResult, PlaygroundMessage, Result, Shader } from 'slang-playground-shared';
+import { isControllerRendered } from "slang-playground-shared";
 
 // Maps to track open panels by file URI and command type
 const playgroundPanels = new Map<string, vscode.WebviewPanel>();
@@ -82,17 +82,11 @@ export async function sharedActivate(context: ExtensionContext, slangHandler: Sl
 		commands.registerCommand('slang.playgroundRun', async () => {
 			const userSource = window.activeTextEditor.document.getText();
 			const userURI = window.activeTextEditor.document.uri;
-			const shaderType = checkShaderType(userSource);
-			if (shaderType == null) {
-				vscode.window.showErrorMessage("Error: In order to run the shader, please define either imageMain or printMain function in the shader code.");
-				return;
-			}
 			const compileResult = await slangHandler.compilePlayground({
 				target: "WGSL",
-				entrypoint: shaderType,
+				entrypoint: null,
 				sourceCode: userSource,
 				shaderPath: window.activeTextEditor.document.uri.toString(false),
-				noWebGPU: false,
 				uri: userURI.toString(),
 			});
 			if (compileResult.succ == false) {
@@ -126,7 +120,7 @@ export async function sharedActivate(context: ExtensionContext, slangHandler: Sl
 			panel.onDidDispose(() => playgroundPanels.delete(playgroundKey));
 			panel.webview.html = getWebviewContent(context, panel, 'client/dist/webviewBundle.js', 'client/dist/webviewBundle.css');
 
-			if (shaderType === 'printMain') {
+			if (compilation.outputTypes.includes("printing")) {
 				const outputKey = userURI.toString() + ':output';
 				if (outputPanels.has(outputKey)) {
 					try { outputPanels.get(outputKey)!.dispose(); } catch { }
@@ -210,7 +204,7 @@ export async function sharedActivate(context: ExtensionContext, slangHandler: Sl
 
 	function updateContext(editor: vscode.TextEditor | undefined) {
 		const text = editor?.document.getText() || "";
-		const shouldShow = text.match("void\\s+printMain\\s*\\(") != null || text.match("float4\\s+imageMain\\s*\\(") != null;
+		const shouldShow = text.match("import playground;") != null;
 		vscode.commands.executeCommand('setContext', 'isPlaygroundFile', shouldShow);
 	}
 
@@ -257,10 +251,14 @@ export async function sharedActivate(context: ExtensionContext, slangHandler: Sl
 			entrypoint: selectedEntrypoint,
 			sourceCode: userSource,
 			shaderPath: window.activeTextEditor.document.uri.toString(false),
-			noWebGPU: true,
 		});
 		if (compilationResult.succ == false) {
+			const logChannel = getSlangLogChannel();
 			vscode.window.showErrorMessage(compilationResult.message);
+			if (compilationResult.log) {
+				logChannel.appendLine(compilationResult.log);
+				logChannel.show(true);
+			}
 			return;
 		}
 		const shader = compilationResult.result;
@@ -282,10 +280,14 @@ export async function sharedActivate(context: ExtensionContext, slangHandler: Sl
 			entrypoint: "",
 			sourceCode: userSource,
 			shaderPath: window.activeTextEditor.document.uri.toString(false),
-			noWebGPU: true,
 		});
 		if (compilationResult.succ == false) {
+			const logChannel = getSlangLogChannel();
 			vscode.window.showErrorMessage(compilationResult.message);
+			if (compilationResult.log) {
+				logChannel.appendLine(compilationResult.log);
+				logChannel.show(true);
+			}
 			return;
 		}
 		const shader = compilationResult.result;
@@ -344,16 +346,4 @@ export async function sharedActivate(context: ExtensionContext, slangHandler: Sl
 	</body>
 	</html>
 `;
-}
-
-export function checkShaderType(userSource: string) {
-    // we did a pre-filter on the user input source code.
-    let shaderTypes = RUNNABLE_ENTRY_POINT_NAMES.filter((entryPoint) => userSource.includes(entryPoint));
-
-    // Only one of the main function should be defined.
-    // In this case, we will know that the shader is not runnable, so we can only compile it.
-    if (shaderTypes.length !== 1)
-        return null;
-
-    return shaderTypes[0];
 }

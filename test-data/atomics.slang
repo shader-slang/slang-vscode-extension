@@ -1,7 +1,12 @@
 import playground;
+import printing;
 
 groupshared Atomic<int> atomicVariable;
 
+[shader("compute")]
+[numthreads(1, 1, 1)]
+[playground::CALL(1, 1, 1)]
+[playground::CALL::ONCE]
 void printMain()
 {
     int replacedValue;
