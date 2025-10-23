@@ -8,7 +8,7 @@ import rendering;
 [playground::TIME]
 uniform float time;
 
-[playgroun d::FRAME_ID]
+[playground::FRAME_ID]
 uniform float frame;
 
 typealias vec2 = float2;
