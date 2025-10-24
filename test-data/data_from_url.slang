@@ -1,4 +1,5 @@
 import playground;
+import printing;
 
 // Load 1024 bytes of ascending hex values (0x00, 0x01, 0x02, ... 0xFF, repeating)
 [playground::DATA("static/hex_demo.bin")]
@@ -24,6 +25,10 @@ uint getByte(int byteIndex)
     return (component >> (byteInComponent * 8)) & 0xFF;
 }
 
+[shader("compute")]
+[numthreads(1, 1, 1)]
+[playground::CALL(1, 1, 1)]
+[playground::CALL::ONCE]
 void printMain()
 {
     const int totalBytes = hexData.getCount() * 16;
