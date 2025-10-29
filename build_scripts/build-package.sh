@@ -45,8 +45,8 @@ echo '' >> .vscodeignore
 echo 'media/*.worker.js' >> .vscodeignore
 echo 'server/dist/browserServerMain.js' >> .vscodeignore
 
-target_build "$WIN32_X64_ZIP" win32-x64 bin/slangd.exe bin/slang.dll bin/slang-glsl-module.dll
-target_build "$WIN32_ARM64_ZIP" win32-arm64 bin/slangd.exe bin/slang.dll bin/slang-glsl-module.dll
+target_build "$WIN32_X64_ZIP" win32-x64 bin/slangd.exe bin/slang.dll bin/slang-compiler.dll bin/slang-glsl-module.dll
+target_build "$WIN32_ARM64_ZIP" win32-arm64 bin/slangd.exe bin/slang.dll bin/slang-compiler.dll bin/slang-glsl-module.dll
 target_build "$LINUX_X64_ZIP" linux-x64 bin/slangd lib/libslang.so lib/libslang-compiler.so\* lib/libslang-glsl-module\*.so
 target_build "$LINUX_ARM64_ZIP" linux-arm64 bin/slangd lib/libslang.so lib/libslang-compiler.so\* lib/libslang-glsl-module\*.so
 target_build "$DARWIN_X64_ZIP" darwin-x64 bin/slangd lib/libslang.dylib lib/libslang-compiler\*.dylib lib/libslang-glsl-module\*.dylib
