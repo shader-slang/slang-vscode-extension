@@ -205,6 +205,16 @@
                     "default": true,
                     "description": "Enable inlay hints for parameter names at call sites."
                 },
+                "slang.workspaceFlavor": {
+                    "scope": "window",
+                    "type": "string",
+                    "enum": [
+                        "standard",
+                        "vfx"
+                    ],
+                    "default": "standard",
+                    "description": "Controls the workspace flavor of the language server."
+                },
                 "slangLanguageServer.trace.server": {
                     "scope": "window",
                     "type": "string",
