@@ -1,5 +1,10 @@
 # Change Log
 
+# v2.0.5
+- Update to Slang v2026.1.2.
+- Adding support for FloatE4M3, FloatE5M2 and BFloat16 types.
+- Adding missing CoopMatrix functions.
+
 # v2.0.4
 - Update to Slang v2025.24.3.
 
