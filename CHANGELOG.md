@@ -1,5 +1,8 @@
 # Change Log
 
+# v2.0.6
+- Update to Slang v2026.2.2.
+
 # v2.0.5
 - Update to Slang v2026.1.2.
 - Adding support for FloatE4M3, FloatE5M2 and BFloat16 types.
