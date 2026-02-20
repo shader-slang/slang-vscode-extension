@@ -3,9 +3,11 @@ import * as vscode from 'vscode';
 import { ExtensionContext, workspace } from 'vscode';
 
 import * as fs from 'fs';
+import { spawn } from 'child_process';
 import {
 	LanguageClient,
 	LanguageClientOptions,
+	Middleware,
 	ServerOptions,
 	TransportKind
 } from 'vscode-languageclient/node';
@@ -17,6 +19,109 @@ import { getSlangFilesWithContents, sharedActivate } from './sharedClient';
 
 let client: LanguageClient;
 let worker: Worker;
+
+const PYTHON_LOOKUP_TIMEOUT_MS = 2000;
+
+async function findSlangpySearchPath(): Promise<string | undefined> {
+	let pythonInterpreterPath: string | undefined;
+	try {
+		pythonInterpreterPath = await vscode.commands.executeCommand<string>('python.interpreterPath');
+	} catch {
+		pythonInterpreterPath = undefined;
+	}
+	const interpreters = [
+		pythonInterpreterPath,
+		workspace.getConfiguration('python').get<string>('defaultInterpreterPath'),
+		workspace.getConfiguration('python').get<string>('pythonPath'),
+		'python',
+	].filter((value, index, array): value is string => !!value && value.trim().length > 0 && array.indexOf(value) === index);
+
+	for (const interpreter of interpreters) {
+		const found = await new Promise<string | undefined>((resolve) => {
+			const pythonScript = `
+import importlib.util
+import pathlib
+spec = importlib.util.find_spec("slangpy")
+if not spec:
+    raise SystemExit(0)
+roots = []
+if spec.submodule_search_locations:
+    roots.extend(pathlib.Path(p).resolve() for p in spec.submodule_search_locations)
+if spec.origin:
+    roots.append(pathlib.Path(spec.origin).resolve().parent)
+for root in roots:
+    for match in [root, *root.rglob("slangpy.slang")]:
+        candidate = match if match.name == "slangpy.slang" else (match / "slangpy.slang")
+        if candidate.is_file():
+            print(candidate.parent)
+            raise SystemExit(0)
+`;
+			const process = spawn(interpreter, ['-c', pythonScript], { stdio: ['ignore', 'pipe', 'ignore'] });
+			const timeout = setTimeout(() => {
+				process.kill();
+				resolve(undefined);
+			}, PYTHON_LOOKUP_TIMEOUT_MS);
+			let output = '';
+			process.stdout.on('data', (chunk) => {
+				output += chunk.toString();
+			});
+			process.on('error', () => {
+				clearTimeout(timeout);
+				resolve(undefined);
+			});
+			process.on('close', () => {
+				clearTimeout(timeout);
+				const foundPath = output.trim().split(/\r?\n/)[0];
+				resolve(foundPath && fs.existsSync(foundPath) ? foundPath : undefined);
+			});
+		});
+		if (found) {
+			return found;
+		}
+	}
+
+	return undefined;
+}
+
+function withSlangpySearchPathMiddleware(
+	originalMiddleware: Middleware | undefined,
+	slangpySearchPath: string | undefined,
+): Middleware | undefined {
+	if (!slangpySearchPath) {
+		return originalMiddleware;
+	}
+	return {
+		...originalMiddleware,
+		workspace: {
+			...originalMiddleware?.workspace,
+			configuration: async (params, token, next) => {
+				const values = await (originalMiddleware?.workspace?.configuration?.(params, token, next) ?? next(params, token));
+				if (!Array.isArray(values) || !Array.isArray(params.items)) {
+					return values;
+				}
+				for (let i = 0; i < params.items.length; i++) {
+					const section = params.items[i]?.section;
+					if (section === 'slang.additionalSearchPaths') {
+						const searchPaths = Array.isArray(values[i]) ? values[i] : [];
+						if (!searchPaths.includes(slangpySearchPath)) {
+							values[i] = [...searchPaths, slangpySearchPath];
+						}
+					}
+					if (section === 'slang') {
+						const sectionValue = typeof values[i] === 'object' && values[i] !== null ? values[i] : {};
+						const searchPaths = Array.isArray((sectionValue as { additionalSearchPaths?: unknown }).additionalSearchPaths)
+							? (sectionValue as { additionalSearchPaths?: string[] }).additionalSearchPaths!
+							: [];
+						if (!searchPaths.includes(slangpySearchPath)) {
+							values[i] = { ...sectionValue, additionalSearchPaths: [...searchPaths, slangpySearchPath] };
+						}
+					}
+				}
+				return values;
+			},
+		},
+	};
+}
 
 
 function sendDidOpenTextDocument(document: vscode.TextDocument) {
@@ -57,6 +162,7 @@ function sendDidChangeTextDocument(event: vscode.TextDocumentChangeEvent) {
 
 export async function activate(context: ExtensionContext) {
 	const serverModule = getSlangdLocation(context);
+	const slangpySearchPath = await findSlangpySearchPath();
 	const serverOptions: ServerOptions = {
 		run: { command: serverModule, transport: TransportKind.stdio },
 		debug: {
@@ -68,6 +174,7 @@ export async function activate(context: ExtensionContext) {
 	const clientOptions: LanguageClientOptions = {
 		// Register the server for plain text documents
 		documentSelector: [{ scheme: 'file', language: 'slang' }],
+		middleware: withSlangpySearchPathMiddleware(undefined, slangpySearchPath),
 	};
 
 	// Create the language client and start the client.
