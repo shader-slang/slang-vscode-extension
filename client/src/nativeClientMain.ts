@@ -28,13 +28,14 @@ async function findSlangpySearchPath(): Promise<string | undefined> {
 		pythonInterpreterPath = await vscode.commands.executeCommand<string>('python.interpreterPath');
 	} catch {
 		pythonInterpreterPath = undefined;
+		console.warn('Python interpreter command is unavailable; falling back to Python settings/path lookup.');
 	}
-	const interpreters = [
+	const interpreters = Array.from(new Set([
 		pythonInterpreterPath,
 		workspace.getConfiguration('python').get<string>('defaultInterpreterPath'),
 		workspace.getConfiguration('python').get<string>('pythonPath'),
 		'python',
-	].filter((value, index, array): value is string => !!value && value.trim().length > 0 && array.indexOf(value) === index);
+	])).filter((value): value is string => !!value && value.trim().length > 0);
 
 	for (const interpreter of interpreters) {
 		const found = await new Promise<string | undefined>((resolve) => {
@@ -50,27 +51,40 @@ if spec.submodule_search_locations:
 if spec.origin:
     roots.append(pathlib.Path(spec.origin).resolve().parent)
 for root in roots:
-    for match in [root, *root.rglob("slangpy.slang")]:
-        candidate = match if match.name == "slangpy.slang" else (match / "slangpy.slang")
-        if candidate.is_file():
-            print(candidate.parent)
+    direct_candidates = [root / "slangpy.slang", root / "slang" / "slangpy.slang"]
+    for match in direct_candidates:
+        if match.is_file():
+            print(match.parent)
+            raise SystemExit(0)
+    for match in root.rglob("slangpy.slang"):
+        if match.is_file():
+            print(match.parent)
             raise SystemExit(0)
 `;
-			const process = spawn(interpreter, ['-c', pythonScript], { stdio: ['ignore', 'pipe', 'ignore'] });
+			if ((interpreter.includes(path.sep) || path.isAbsolute(interpreter)) && (!fs.existsSync(interpreter) || !fs.statSync(interpreter).isFile())) {
+				resolve(undefined);
+				return;
+			}
+			const pythonProcess = spawn(interpreter, ['-c', pythonScript], { stdio: ['ignore', 'pipe', 'ignore'] });
 			const timeout = setTimeout(() => {
-				process.kill();
+				pythonProcess.kill();
 				resolve(undefined);
 			}, PYTHON_LOOKUP_TIMEOUT_MS);
 			let output = '';
-			process.stdout.on('data', (chunk) => {
+			pythonProcess.stdout.on('data', (chunk) => {
 				output += chunk.toString();
 			});
-			process.on('error', () => {
+			pythonProcess.on('error', () => {
 				clearTimeout(timeout);
+				console.warn(`Failed to run Python interpreter for slangpy detection: ${interpreter}`);
 				resolve(undefined);
 			});
-			process.on('close', () => {
+			pythonProcess.on('close', (code) => {
 				clearTimeout(timeout);
+				if (code !== 0) {
+					resolve(undefined);
+					return;
+				}
 				const foundPath = output.trim().split(/\r?\n/)[0];
 				resolve(foundPath && fs.existsSync(foundPath) ? foundPath : undefined);
 			});
@@ -109,8 +123,9 @@ function withSlangpySearchPathMiddleware(
 					}
 					if (section === 'slang') {
 						const sectionValue = typeof values[i] === 'object' && values[i] !== null ? values[i] : {};
-						const searchPaths = Array.isArray((sectionValue as { additionalSearchPaths?: unknown }).additionalSearchPaths)
-							? (sectionValue as { additionalSearchPaths?: string[] }).additionalSearchPaths!
+						const sectionConfig = sectionValue as { additionalSearchPaths?: unknown };
+						const searchPaths = Array.isArray(sectionConfig.additionalSearchPaths)
+							? sectionConfig.additionalSearchPaths.filter((entry): entry is string => typeof entry === 'string')
 							: [];
 						if (!searchPaths.includes(slangpySearchPath)) {
 							values[i] = { ...sectionValue, additionalSearchPaths: [...searchPaths, slangpySearchPath] };
