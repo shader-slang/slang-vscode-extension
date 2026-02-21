@@ -22,6 +22,29 @@ let worker: Worker;
 
 const PYTHON_LOOKUP_TIMEOUT_MS = 2000;
 
+function canFindSlangpyInUserSearchPaths(): boolean {
+	const configuredSearchPathsRaw = vscode.workspace.getConfiguration('slang').get<unknown>('additionalSearchPaths', []);
+	const configuredSearchPaths = Array.isArray(configuredSearchPathsRaw)
+		? configuredSearchPathsRaw
+			.filter((searchPath): searchPath is string => typeof searchPath === 'string' && searchPath.trim().length > 0)
+			.map((searchPath) => searchPath.trim())
+		: [];
+	const workspaceRoots = vscode.workspace.workspaceFolders?.map((folder) => folder.uri.fsPath) ?? [];
+
+	for (const configuredPath of configuredSearchPaths) {
+		const candidatePaths = path.isAbsolute(configuredPath)
+			? [configuredPath]
+			: workspaceRoots.map((workspaceRoot) => path.resolve(workspaceRoot, configuredPath));
+
+		for (const candidatePath of candidatePaths) {
+			if (fs.existsSync(path.join(candidatePath, 'slangpy.slang'))) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
 async function findSlangpySearchPath(): Promise<string | undefined> {
 	let pythonInterpreterPath: string | undefined;
 	try {
@@ -177,7 +200,7 @@ function sendDidChangeTextDocument(event: vscode.TextDocumentChangeEvent) {
 
 export async function activate(context: ExtensionContext) {
 	const serverModule = getSlangdLocation(context);
-	const slangpySearchPath = await findSlangpySearchPath();
+	const slangpySearchPath = canFindSlangpyInUserSearchPaths() ? undefined : await findSlangpySearchPath();
 	const serverOptions: ServerOptions = {
 		run: { command: serverModule, transport: TransportKind.stdio },
 		debug: {
