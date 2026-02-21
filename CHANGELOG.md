@@ -1,5 +1,9 @@
 # Change Log
 
+# v2.0.7
+- Update to Slang v2026.3.1.
+- Fixes crash on incomplete import statements
+
 # v2.0.6
 - Update to Slang v2026.2.2.
 
