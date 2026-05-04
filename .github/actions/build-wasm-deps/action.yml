@@ -9,6 +9,10 @@ inputs:
 runs:
   using: 'composite'
   steps:
+    - name: Setup TypeScript
+      shell: bash
+      run: npm install -g typescript@5.9.3
+
     - name: Setup emsdk
       shell: bash
       run: |
