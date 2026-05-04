@@ -1,6 +1,10 @@
 # Change Log
 
-# v2.0.8
+# v2.0.10
+- Update to Slang v2026.8.
+- Highlighting grammar fixes.
+
+# v2.0.9
 - Update to Slang v2026.5.1.
 - Improved grammar for syntax highlighting.
 
