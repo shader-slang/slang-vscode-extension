@@ -32,7 +32,7 @@ runs:
 
     - name: restore slang-wasm
       id: cache_slang
-      uses: actions/cache/restore@v4
+      uses: actions/cache/restore@v5
       with:
         path: |
           ./slang-wasm.js
@@ -45,7 +45,7 @@ runs:
 
     - name: restore spirv-tools
       id: cache_spirv_tools
-      uses: actions/cache/restore@v4
+      uses: actions/cache/restore@v5
       with:
         path: |
           ./spirv-tools.js
@@ -64,7 +64,7 @@ runs:
 
     - name: save slang-wasm
       if: steps.cache_slang.outputs.cache-hit != 'true'
-      uses: actions/cache/save@v4
+      uses: actions/cache/save@v5
       with:
         path: |
           ./slang-wasm.js
@@ -83,7 +83,7 @@ runs:
 
     - name: save spirv-tools-wasm
       if: steps.cache_spirv_tools.outputs.cache-hit != 'true'
-      uses: actions/cache/save@v4
+      uses: actions/cache/save@v5
       with:
         path: |
           ./spirv-tools.js

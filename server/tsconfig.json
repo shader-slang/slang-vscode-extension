@@ -5,8 +5,8 @@
 			"es2022",
 			"WebWorker"
 		],
-		"module": "commonjs",
-		"moduleResolution": "node",
+		"module": "esnext",
+		"moduleResolution": "bundler",
 		"sourceMap": true,
 		"strict": true,
 		"types": [
