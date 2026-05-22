@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2024-2026 The Khronos Group, Inc.
+SPDX-License-Identifier: CC-BY-4.0
+-->
+
 # The Slang Shading Language VSCode Extension
 
 This is the official Visual Studio Code extension for the Slang shading language. Powered by the Slang shader compiler, this extension provides accurate coding assist for both Slang and HLSL.
