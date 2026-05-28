@@ -833,7 +833,7 @@
       "patterns": [
         {
           "name": "meta.qualified.type.call.slang",
-          "begin": "(?x)\\b((?:String|Array|Tuple|Optional|Conditional|Result|Ptr|ImmutablePtr|Atomic|DescriptorHandle|DifferentialPair|ParameterBlock|ConstantBuffer|TextureBuffer|SamplerState|SamplerComparisonState|SubpassInput|SubpassInputMS|RaytracingAccelerationStructure|(?:(?:Depth|Feedback|RasterizerOrdered|RW)?Texture(?:1D|2D|3D|Cube)(?:Array)?(?:MS(?:Array)?)?|Sampler(?:1D|2D|3D|Cube)(?:Array)?(?:Shadow)?|(?:Append|Consume|RW)?StructuredBuffer|(?:RW)?Buffer|(?:RW|RasterizerOrdered)?ByteAddressBuffer)|__[_A-Za-z0-9]*Type|[A-Z][A-Za-z_0-9]*))\\b(?=\\s*(?:<[^;\\n]*>)?\\s*(?:\\.|::)[^;\\n]*\\b[A-Za-z_][A-Za-z_0-9]*\\b\\s*(?:<[^{};\\n]*>\\s*)?\\()",
+          "begin": "(?x)\\b((?:String|Array|Tuple|Optional|Conditional|Result|Ptr|ImmutablePtr|Atomic|DescriptorHandle|DifferentialPair|ParameterBlock|ConstantBuffer|TextureBuffer|SamplerState|SamplerComparisonState|SubpassInput|SubpassInputMS|RaytracingAccelerationStructure|(?:(?:Depth|Feedback|RasterizerOrdered|RW)?Texture(?:1D|2D|3D|Cube)(?:Array)?(?:MS(?:Array)?)?|Sampler(?:1D|2D|3D|Cube)(?:Array)?(?:Shadow)?|(?:Append|Consume|RW)?StructuredBuffer|(?:RW)?Buffer|(?:RW|RasterizerOrdered)?ByteAddressBuffer)|__[_A-Za-z0-9]*Type|[A-Z][A-Za-z_0-9]*))\\b(?=\\s*(?:<[^;\\n]*>)?\\s*(?:\\.|::)[^;\"'\\n]*\\b[A-Za-z_][A-Za-z_0-9]*\\b\\s*(?:<[^{};\\n]*>\\s*)?\\()",
           "beginCaptures": {
             "1": {
               "name": "entity.name.type.slang"
@@ -1811,7 +1811,7 @@
               "name": "punctuation.definition.string.begin.slang"
             }
           },
-          "end": "(?<!\\\\)\"",
+          "end": "\"|$",
           "endCaptures": {
             "0": {
               "name": "punctuation.definition.string.end.slang"
@@ -1831,7 +1831,7 @@
               "name": "punctuation.definition.string.begin.slang"
             }
           },
-          "end": "(?<!\\\\)'",
+          "end": "'|$",
           "endCaptures": {
             "0": {
               "name": "punctuation.definition.string.end.slang"
