@@ -5,12 +5,9 @@ SPDX-PackageDownloadLocation = "https://github.com/shader-slang/slang-vscode-ext
 
 [[annotations]]
 path = "**"
-precedence = "aggregate"
-SPDX-FileCopyrightText = ["2016, Carnegie Mellon University and NVIDIA Corporation", "2024 The Khronos Group, Inc."]
+precedence = "closest"
+SPDX-FileCopyrightText = [
+    "2016, Carnegie Mellon University and NVIDIA Corporation",
+    "2024-2026 The Khronos Group, Inc.",
+]
 SPDX-License-Identifier = "Apache-2.0 WITH LLVM-exception"
-
-[[annotations]]
-path = ["README.md", "CODE_OF_CONDUCT.md", "CONTRIBUTING.md"]
-precedence = "aggregate"
-SPDX-FileCopyrightText = "2024 The Khronos Group, Inc."
-SPDX-License-Identifier = "CC-BY-4.0"
