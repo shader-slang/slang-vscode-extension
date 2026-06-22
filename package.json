@@ -215,6 +215,26 @@
                     "default": "standard",
                     "description": "Controls the workspace flavor of the language server."
                 },
+                "slang.predefinedLanguageVersion": {
+                    "scope": "window",
+                    "type": "string",
+                    "enum": [
+                        "",
+                        "2018",
+                        "2025",
+                        "2026",
+                        "latest"
+                    ],
+                    "enumDescriptions": [
+                        "Use the compiler's default language version.",
+                        "Legacy Slang (2018) language rules.",
+                        "Slang 2025 language rules.",
+                        "Slang 2026 language rules.",
+                        "The latest Slang language rules (currently 2026)."
+                    ],
+                    "default": "",
+                    "markdownDescription": "The assumed Slang language version for source files that do not contain a `#language` directive. The empty default follows the compiler's own default version. Set this to match the version you build with (for example a global `-std`/`-language-version` option) so the editor does not report false errors on directive-less files. A per-file `#language` directive always overrides this setting."
+                },
                 "slangLanguageServer.trace.server": {
                     "scope": "window",
                     "type": "string",
