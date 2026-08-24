@@ -1,4 +1,5 @@
 npm install
+npm test
 npm run compile
 npm install -g @vscode/vsce
 

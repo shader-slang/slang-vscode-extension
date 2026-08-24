@@ -54,6 +54,12 @@ You can specifiy the set of predefined preprocessor macros that the language ser
 By default, the extension will search for all sub directories in the current workspace for an included or imported file. You can specify additional search paths via the `slang.additionalSearchPaths` setting, which will be looked at first. You can also disable the search in workspace directories and make the extension to search only in configured search paths (via `slang.searchInAllWorkspaceDirectories`). The path of the currently opend file will always be used.
 This setting supports VS Code variables such as `${workspaceFolder}`.
 
+### WebAssembly module preload limits
+
+The browser language server and the Compile, Reflection, and Playground commands use a WebAssembly compiler. Because the WebAssembly compiler cannot directly search the workspace file system, the extension preloads workspace `.slang` files so imported modules remain discoverable. The native desktop language server uses the host file system directly and does not require this preload.
+
+The extension stops preloading before it exceeds `slang.workspaceFilePreloadMaxFiles` or `slang.workspaceFilePreloadMaxSizeMB`. Directories containing generated or cached Slang files should be excluded with the VS Code `files.exclude` setting. VS Code does not apply `search.exclude` to extension file-discovery requests.
+
 ### Commit characters for auto completion
 
 Select whether or not to use commit characters to select an auto completion item in addition to pressing the enter key. You can enable commit characters for member completion only or for all types of completion suggestions.

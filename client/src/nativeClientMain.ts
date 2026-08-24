@@ -2,7 +2,6 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import { ExtensionContext, workspace } from 'vscode';
 
-import * as fs from 'fs';
 import {
 	LanguageClient,
 	LanguageClientOptions,
@@ -13,32 +12,35 @@ import { Worker } from 'worker_threads';
 import { CompiledPlayground, CompileRequest, EntrypointsRequest, EntrypointsResult, Result, ServerInitializationOptions, Shader, WorkerRequest } from 'slang-playground-shared';
 import { getSlangdLocation } from './native/slangd';
 import { SlangSynthesizedCodeProvider } from './native/synth_doc_provider';
-import { getSlangFilesWithContents, sharedActivate } from './sharedClient';
+import { getSlangFilesWithContents, getWorkspaceFilePreloadErrorMessage, sharedActivate } from './sharedClient';
 import { expandSlangSettingsInConfiguration } from './configVariables';
 
-let client: LanguageClient;
-let worker: Worker;
+let client: LanguageClient | undefined;
+let worker: Worker | undefined;
+let workerInitialization: Promise<Worker> | undefined;
+let workerRequestQueue: Promise<void> = Promise.resolve();
 
-
-function sendDidOpenTextDocument(document: vscode.TextDocument) {
+function postDidOpenTextDocument(target: Worker, document: vscode.TextDocument): void {
 	if (document.languageId !== 'slang') return;
-	sendMessageToWorker({
+	target.postMessage({
 		type: 'DidOpenTextDocument',
 		textDocument: {
 			uri: document.uri.toString(),
 			text: document.getText(),
 		}
-	});
+	} satisfies WorkerRequest);
 }
 
+function sendDidOpenTextDocument(document: vscode.TextDocument): void {
+	if (worker) postDidOpenTextDocument(worker, document);
+}
 
-function sendDidChangeTextDocument(event: vscode.TextDocumentChangeEvent) {
-	const document = event.document;
-	if (document.languageId !== 'slang') return;
-	sendMessageToWorker({
+function sendDidChangeTextDocument(event: vscode.TextDocumentChangeEvent): void {
+	if (!worker || event.document.languageId !== 'slang') return;
+	worker.postMessage({
 		type: 'DidChangeTextDocument',
 		textDocument: {
-			uri: document.uri.toString(),
+			uri: event.document.uri.toString(),
 		},
 		contentChanges: event.contentChanges.map(change => ({
 			range: {
@@ -53,7 +55,141 @@ function sendDidChangeTextDocument(event: vscode.TextDocumentChangeEvent) {
 			},
 			text: change.text
 		}))
+	} satisfies WorkerRequest);
+}
+
+async function getEmbeddedSlangFiles(context: ExtensionContext): Promise<{ uri: string, content: string }[]> {
+	const slangDir = vscode.Uri.file(path.join(
+		context.extensionPath,
+		'external',
+		'slang-playground',
+		'engine',
+		'slang-compilation-engine',
+		'src',
+		'slang',
+	));
+	let entries: [string, vscode.FileType][];
+	try {
+		entries = await workspace.fs.readDirectory(slangDir);
+	} catch (error) {
+		if (error instanceof vscode.FileSystemError && error.code === 'FileNotFound') return [];
+		throw error;
+	}
+
+	const decoder = new TextDecoder();
+	const files: { uri: string, content: string }[] = [];
+	for (const [name, type] of entries) {
+		if (type !== vscode.FileType.File || !name.endsWith('.slang')) continue;
+		const uri = vscode.Uri.joinPath(slangDir, name);
+		files.push({ uri: uri.toString(false), content: decoder.decode(await workspace.fs.readFile(uri)) });
+	}
+	return files;
+}
+
+async function createInitializationOptions(
+	context: ExtensionContext,
+	token: vscode.CancellationToken,
+): Promise<ServerInitializationOptions> {
+	const [workspaceFiles, embeddedFiles] = await Promise.all([
+		getSlangFilesWithContents(token),
+		getEmbeddedSlangFiles(context),
+	]);
+	return {
+		extensionUri: context.extensionUri.toString(true),
+		workspaceUris: workspace.workspaceFolders?.map(folder => folder.uri.fsPath) ?? [],
+		files: [...workspaceFiles, ...embeddedFiles],
+	};
+}
+
+function requestWorker<T>(target: Worker, message: WorkerRequest): Promise<T> {
+	return new Promise((resolve, reject) => {
+		const onMessage = (result: T) => {
+			cleanup();
+			resolve(result);
+		};
+		const onError = (error: Error) => {
+			cleanup();
+			reject(error);
+		};
+		const onExit = (code: number) => {
+			cleanup();
+			reject(new Error(`Slang playground worker exited with code ${code}.`));
+		};
+		const cleanup = () => {
+			target.off('message', onMessage);
+			target.off('error', onError);
+			target.off('exit', onExit);
+		};
+
+		target.once('message', onMessage);
+		target.once('error', onError);
+		target.once('exit', onExit);
+		target.postMessage(message);
 	});
+}
+
+async function initializeWorker(context: ExtensionContext): Promise<Worker> {
+	return vscode.window.withProgress(
+		{
+			location: vscode.ProgressLocation.Notification,
+			title: 'Loading Slang workspace modules',
+			cancellable: true,
+		},
+		async (_progress, token) => {
+			const initializationOptions = await createInitializationOptions(context, token);
+			const candidate = new Worker(path.join(context.extensionPath, 'server', 'dist', 'nativeServerMain.js'));
+			const cancellation = token.onCancellationRequested(() => void candidate.terminate());
+			try {
+				const result = await requestWorker<Result<undefined>>(candidate, {
+					type: 'Initialize',
+					initializationOptions,
+				});
+				if (result.succ === false) throw new Error(result.message);
+			} catch (error) {
+				await candidate.terminate();
+				throw error;
+			} finally {
+				cancellation.dispose();
+			}
+
+			worker = candidate;
+			candidate.once('exit', () => {
+				if (worker === candidate) {
+					worker = undefined;
+					workerInitialization = undefined;
+				}
+			});
+			for (const document of workspace.textDocuments) {
+				postDidOpenTextDocument(candidate, document);
+			}
+			return candidate;
+		},
+	);
+}
+
+async function getWorker(context: ExtensionContext): Promise<Worker> {
+	if (worker) return worker;
+	if (!workerInitialization) {
+		workerInitialization = initializeWorker(context).catch(error => {
+			workerInitialization = undefined;
+			throw error;
+		});
+	}
+	return workerInitialization;
+}
+
+function enqueueWorkerRequest<T>(context: ExtensionContext, message: WorkerRequest): Promise<T> {
+	const request = workerRequestQueue.then(async () => requestWorker<T>(await getWorker(context), message));
+	workerRequestQueue = request.then(() => undefined, () => undefined);
+	return request;
+}
+
+function errorResult<T>(error: unknown): Result<T> {
+	return {
+		succ: false,
+		message: getWorkspaceFilePreloadErrorMessage(error),
+		log: error instanceof Error ? error.stack ?? error.message : String(error),
+	};
 }
 
 export async function activate(context: ExtensionContext) {
@@ -65,115 +201,68 @@ export async function activate(context: ExtensionContext) {
 			//	, args: ["--debug"]
 		}
 	};
-	// Options to control the language client
 	const clientOptions: LanguageClientOptions = {
-		// Register the server for plain text documents
 		documentSelector: [{ scheme: 'file', language: 'slang' }],
 		middleware: {
 			workspace: {
 				configuration: async (params, token, next) => {
 					const values = await next(params, token);
-					if (!Array.isArray(values)) {
-						return values;
-					}
-					return values.map((value, index) =>
-						expandSlangSettingsInConfiguration(
-							value,
-							params.items[index]?.section,
-							params.items[index]?.scopeUri,
-						)
-					);
+					if (!Array.isArray(values)) return values;
+					return values.map((value, index) => expandSlangSettingsInConfiguration(
+						value,
+						params.items[index]?.section,
+						params.items[index]?.scopeUri,
+					));
 				},
 			},
 		},
 	};
 
-	// Create the language client and start the client.
 	client = new LanguageClient(
 		'slangLanguageServer',
 		'Slang Language Server',
 		serverOptions,
 		clientOptions
 	);
-	// Start the client. This will also launch the server
-	client.start();
+	await client.start();
 
-	let synthCodeProvider = new SlangSynthesizedCodeProvider();
+	const synthCodeProvider = new SlangSynthesizedCodeProvider();
 	synthCodeProvider.extensionContext = context;
-
 	context.subscriptions.push(
-		workspace.registerTextDocumentContentProvider('slang-synth', synthCodeProvider)
-	);
-
-	// Initialize language server options, including the implicit playground.slang file and other embedded slang files.
-	const slangDir = path.join(context.extensionPath, 'external', 'slang-playground', 'engine', 'slang-compilation-engine', 'src', 'slang');
-	let embeddedSlangFiles: { uri: string, content: string }[] = [];
-	if (fs.existsSync(slangDir)) {
-		const names = fs.readdirSync(slangDir);
-		for (const name of names) {
-			if(!name.endsWith(".slang")) continue;
-			const fileUri = vscode.Uri.file(path.join(slangDir, name));
-			const fileDocument = await vscode.workspace.openTextDocument(fileUri);
-			embeddedSlangFiles.push({ uri: fileUri.toString(), content: fileDocument.getText() });
-		}
-	}
-	const initializationOptions: ServerInitializationOptions = {
-		extensionUri: context.extensionUri.toString(true),
-		workspaceUris: vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders.map(folder => folder.uri.fsPath) : [],
-		files: [
-			... await getSlangFilesWithContents(),
-			...embeddedSlangFiles
-		]
-	}
-	worker = new Worker(path.join(context.extensionPath, 'server', 'dist', 'nativeServerMain.js'), {
-		workerData: initializationOptions
-	});
-	sendMessageToWorker({ type: 'Initialize', initializationOptions: initializationOptions });
-
-	// Listen for document open/change events
-	context.subscriptions.push(
-		vscode.workspace.onDidOpenTextDocument(sendDidOpenTextDocument),
-		vscode.workspace.onDidChangeTextDocument(sendDidChangeTextDocument)
+		workspace.registerTextDocumentContentProvider('slang-synth', synthCodeProvider),
+		workspace.onDidOpenTextDocument(sendDidOpenTextDocument),
+		workspace.onDidChangeTextDocument(sendDidChangeTextDocument),
 	);
 
 	sharedActivate(context, {
-		compileShader: function (parameter: CompileRequest): Promise<Result<Shader>> {
-			sendMessageToWorker({ type: 'slang/compile', ...parameter });
-			return new Promise((resolve, reject) => {
-				worker.once('message', (result: Result<Shader>) => {
-					resolve(result);
-				});
-			});
+		compileShader: async (parameter: CompileRequest): Promise<Result<Shader>> => {
+			try {
+				return await enqueueWorkerRequest<Result<Shader>>(context, { type: 'slang/compile', ...parameter });
+			} catch (error) {
+				return errorResult(error);
+			}
 		},
-		compilePlayground: function (parameter: CompileRequest & { uri: string }): Promise<Result<CompiledPlayground>> {
-			sendMessageToWorker({ type: 'slang/compilePlayground', ...parameter });
-			return new Promise((resolve, reject) => {
-				worker.once('message', (result: Result<CompiledPlayground>) => {
-					resolve(result);
-				});
-			});
+		compilePlayground: async (parameter: CompileRequest & { uri: string }): Promise<Result<CompiledPlayground>> => {
+			try {
+				return await enqueueWorkerRequest<Result<CompiledPlayground>>(context, { type: 'slang/compilePlayground', ...parameter });
+			} catch (error) {
+				return errorResult(error);
+			}
 		},
-		entrypoints: function (parameter: EntrypointsRequest): Promise<EntrypointsResult> {
-			sendMessageToWorker({ type: 'slang/entrypoints', ...parameter });
-			return new Promise((resolve, reject) => {
-				worker.once('message', (result: EntrypointsResult) => {
-					resolve(result);
-				});
-			});
-		}
+		entrypoints: async (parameter: EntrypointsRequest): Promise<Result<EntrypointsResult>> => {
+			try {
+				return await enqueueWorkerRequest<Result<EntrypointsResult>>(context, { type: 'slang/entrypoints', ...parameter });
+			} catch (error) {
+				return errorResult(error);
+			}
+		},
 	});
 }
 
-export function sendMessageToWorker(message: WorkerRequest) {
-	worker.postMessage(message);
-}
-
-export function deactivate(): Thenable<void> | undefined {
-	if (worker) {
-		worker.terminate();
-	}
-	if (!client) {
-		return undefined;
-	}
-	client.stop();
+export async function deactivate(): Promise<void> {
+	const target = worker;
+	worker = undefined;
+	workerInitialization = undefined;
+	if (target) await target.terminate();
+	if (client) await client.stop();
 }

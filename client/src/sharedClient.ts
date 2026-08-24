@@ -1,6 +1,12 @@
 import { ExtensionContext, Uri, commands, window, workspace } from 'vscode';
 import * as vscode from 'vscode';
 
+import {
+	preloadWorkspaceSlangFiles,
+	WorkspaceFilePreloadCancelledError,
+	WorkspaceFilePreloadLimitError,
+} from './workspaceFilePreload';
+
 let slangLogChannel: vscode.OutputChannel | undefined;
 function getSlangLogChannel(): vscode.OutputChannel {
 	if (!slangLogChannel) {
@@ -16,6 +22,9 @@ import { isControllerRendered } from "slang-playground-shared";
 const playgroundPanels = new Map<string, vscode.WebviewPanel>();
 const uniformPanels = new Map<string, vscode.WebviewPanel>();
 const outputPanels = new Map<string, vscode.OutputChannel>();
+
+export const DEFAULT_WORKSPACE_FILE_PRELOAD_MAX_FILES = 10000;
+export const DEFAULT_WORKSPACE_FILE_PRELOAD_MAX_SIZE_MB = 64;
 
 const compileOptions = ['SPIRV', 'HLSL', 'GLSL', 'METAL', 'WGSL', 'CUDA'] as const;
 type LanguageOptions = {
@@ -49,30 +58,71 @@ const compileOptionMap: { [k in (typeof compileOptions)[number]]: LanguageOption
 	}
 }
 
-export async function getSlangFilesWithContents(): Promise<{ uri: string, content: string }[]> {
-	const pattern = '**/*.slang';
-	const files = await vscode.workspace.findFiles(pattern);
-
-	const results: { uri: string, content: string }[] = [];
-
-	for (const uri of files) {
-		try {
-			const document = await vscode.workspace.openTextDocument(uri);
-			results.push({ uri: uri.toString(false), content: document.getText() });
-		} catch (err) {
-			const logChannel = getSlangLogChannel();
-			logChannel.appendLine(`Failed to read ${uri.fsPath}: ${err}`);
-			logChannel.show(true);
-		}
+export function getWorkspaceFilePreloadErrorMessage(error: unknown): string {
+	if (error instanceof WorkspaceFilePreloadLimitError) {
+		const setting = error.kind === 'fileCount'
+			? 'slang.workspaceFilePreloadMaxFiles'
+			: 'slang.workspaceFilePreloadMaxSizeMB';
+		const limit = error.kind === 'fileCount'
+			? `${error.limit} files`
+			: `${Math.floor(error.limit / (1024 * 1024))} MiB`;
+		return `Slang stopped loading workspace modules after exceeding the ${limit} safety limit. `
+			+ `Exclude generated directories with files.exclude or increase ${setting}, then retry the command or reload the window.`;
 	}
+	if (error instanceof WorkspaceFilePreloadCancelledError) {
+		return error.message;
+	}
+	return error instanceof Error ? error.message : String(error);
+}
 
-	return results;
+export async function getSlangFilesWithContents(
+	token?: vscode.CancellationToken,
+): Promise<{ uri: string, content: string }[]> {
+	const config = workspace.getConfiguration('slang');
+	const maxFiles = config.get<number>(
+		'workspaceFilePreloadMaxFiles',
+		DEFAULT_WORKSPACE_FILE_PRELOAD_MAX_FILES,
+	);
+	const maxSizeMB = config.get<number>(
+		'workspaceFilePreloadMaxSizeMB',
+		DEFAULT_WORKSPACE_FILE_PRELOAD_MAX_SIZE_MB,
+	);
+	const openDocumentContents = new Map(
+		workspace.textDocuments
+			.filter(document => document.languageId === 'slang')
+			.map(document => [document.uri.toString(false), document.getText()]),
+	);
+	const result = await preloadWorkspaceSlangFiles(
+		{
+			findSlangFiles: (maxResults, cancellationToken) => workspace.findFiles(
+				'**/*.slang',
+				undefined,
+				maxResults,
+				cancellationToken,
+			),
+			readFile: uri => workspace.fs.readFile(uri),
+			uriKey: uri => uri.toString(false),
+			uriLabel: uri => uri.fsPath,
+		},
+		openDocumentContents,
+		{ maxFiles, maxBytes: maxSizeMB * 1024 * 1024 },
+		token,
+	);
+
+	const logChannel = getSlangLogChannel();
+	logChannel.appendLine(
+		`Loaded ${result.files.length} workspace Slang files (${(result.totalBytes / (1024 * 1024)).toFixed(1)} MiB).`,
+	);
+	for (const failure of result.readErrors) {
+		logChannel.appendLine(`Failed to read ${failure.uri}: ${failure.error}`);
+	}
+	return result.files;
 }
 
 export type SlangHandler = {
 	compileShader: (parameter: CompileRequest) => Promise<Result<Shader>>;
 	compilePlayground: (parameter: CompileRequest & { uri: string }) => Promise<Result<CompiledPlayground>>;
-	entrypoints: (parameter: EntrypointsRequest) => Promise<EntrypointsResult>;
+	entrypoints: (parameter: EntrypointsRequest) => Promise<Result<EntrypointsResult>>;
 };
 
 // this method is called when vs code is activated
@@ -236,8 +286,17 @@ export async function sharedActivate(context: ExtensionContext, slangHandler: Sl
 				sourceCode: userSource,
 				shaderPath: window.activeTextEditor.document.uri.toString(false),
 			}
-			let entrypoints: EntrypointsResult = await slangHandler.entrypoints(parameter);
-			const entrypointSelection = await window.showQuickPick(entrypoints, {
+			const entrypointsResult = await slangHandler.entrypoints(parameter);
+			if (entrypointsResult.succ === false) {
+				vscode.window.showErrorMessage(entrypointsResult.message);
+				if (entrypointsResult.log) {
+					const logChannel = getSlangLogChannel();
+					logChannel.appendLine(entrypointsResult.log);
+					logChannel.show(true);
+				}
+				return;
+			}
+			const entrypointSelection = await window.showQuickPick(entrypointsResult.result, {
 				placeHolder: 'Select a Entrypoint',
 			}) as (typeof compileOptions)[number] | undefined;
 			if (!entrypointSelection) {

@@ -140,6 +140,20 @@
                     "default": [],
                     "description": "The language server will search for the included or imported file in these additional directories first. If not found, the server will look in all sub directories in the current workspace (if enabled by the setting). Supports VS Code variables such as ${workspaceFolder}."
                 },
+                "slang.workspaceFilePreloadMaxFiles": {
+                    "scope": "window",
+                    "type": "integer",
+                    "minimum": 1,
+                    "default": 10000,
+                    "markdownDescription": "Maximum number of workspace `.slang` files to preload for WebAssembly module discovery. Files excluded by `files.exclude` are not counted. Increase this limit with care because the file contents are copied into WebAssembly memory."
+                },
+                "slang.workspaceFilePreloadMaxSizeMB": {
+                    "scope": "window",
+                    "type": "integer",
+                    "minimum": 1,
+                    "default": 64,
+                    "markdownDescription": "Maximum aggregate size in MiB of workspace `.slang` files to preload for WebAssembly module discovery. Increase this limit with care because the file contents are copied into WebAssembly memory."
+                },
                 "slang.enableCommitCharactersInAutoCompletion": {
                     "scope": "window",
                     "type": "string",
@@ -252,6 +266,7 @@
         "preinstall": "npm --prefix ./external/slang-playground run build-engine",
         "vscode:prepublish": "npm run compile",
         "compile": "node esbuild.config.mjs",
+        "test": "esbuild client/src/workspaceFilePreload.test.ts --bundle --platform=node --format=cjs --outfile=node_modules/.cache/slang-vscode-extension/workspaceFilePreload.test.cjs && node --test node_modules/.cache/slang-vscode-extension/workspaceFilePreload.test.cjs",
         "watch": "esbuild --config=esbuild.config.mjs --watch",
         "package": "node esbuild.config.mjs",
         "chrome": "npm run compile && vscode-test-web --browserType=chromium --browserOption=--enable-unsafe-webgpu --extensionDevelopmentPath=. ./test-data"

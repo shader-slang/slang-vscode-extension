@@ -92,6 +92,7 @@ connection.onInitialize(async (_params: InitializeParams): Promise<InitializeRes
         const emscriptenURI = getEmscriptenURI(file.uri, initializationOptions.workspaceUris);
         loadFileIntoEmscriptenFS(emscriptenURI, file.content);
     }
+    initializationOptions.files = [];
 
     return {
         capabilities: {

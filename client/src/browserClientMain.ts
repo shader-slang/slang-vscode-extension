@@ -1,10 +1,10 @@
-import { ExtensionContext, Uri, commands, window, workspace } from 'vscode';
+import { ExtensionContext, Uri } from 'vscode';
 import * as vscode from 'vscode';
 import { LanguageClientOptions } from 'vscode-languageclient';
 
 import { LanguageClient } from 'vscode-languageclient/browser';
 import type { CompiledPlayground, CompileRequest, EntrypointsRequest, EntrypointsResult, Result, ServerInitializationOptions, Shader } from 'slang-playground-shared';
-import { getSlangFilesWithContents, sharedActivate } from './sharedClient';
+import { getSlangFilesWithContents, getWorkspaceFilePreloadErrorMessage, sharedActivate } from './sharedClient';
 import { expandSlangSettingsInConfiguration } from './configVariables';
 
 let client: LanguageClient;
@@ -12,11 +12,24 @@ let client: LanguageClient;
 // this method is called when vs code is activated
 export async function activate(context: ExtensionContext) {
 	const documentSelector = [{ language: 'slang' }];
+	let workspaceFiles: { uri: string, content: string }[] = [];
+	try {
+		workspaceFiles = await vscode.window.withProgress(
+			{
+				location: vscode.ProgressLocation.Notification,
+				title: 'Loading Slang workspace modules',
+				cancellable: true,
+			},
+			(_progress, token) => getSlangFilesWithContents(token),
+		);
+	} catch (error) {
+		void vscode.window.showErrorMessage(getWorkspaceFilePreloadErrorMessage(error));
+	}
 
 	const initializationOptions: ServerInitializationOptions = {
 		extensionUri: context.extensionUri.toString(true),
-		workspaceUris: vscode.workspace.workspaceFolders.map(folder => folder.uri.fsPath),
-		files: await getSlangFilesWithContents(),
+		workspaceUris: vscode.workspace.workspaceFolders?.map(folder => folder.uri.fsPath) ?? [],
+		files: workspaceFiles,
 	}
 
 	// Options to control the language client
@@ -54,7 +67,7 @@ export async function activate(context: ExtensionContext) {
 		compilePlayground: function (parameter: CompileRequest): Promise<Result<CompiledPlayground>> {
 			return client.sendRequest('slang/compilePlayground', parameter);
 		},
-		entrypoints: function (parameter: EntrypointsRequest): Promise<EntrypointsResult> {
+		entrypoints: function (parameter: EntrypointsRequest): Promise<Result<EntrypointsResult>> {
 			return client.sendRequest('slang/entrypoints', parameter);
 		}
 	});

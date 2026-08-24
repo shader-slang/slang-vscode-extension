@@ -1,5 +1,10 @@
 # Change Log
 
+# Unreleased
+- Defer native Playground compiler initialization until a related command is used.
+- Bound workspace Slang module preloading by file count and aggregate source size.
+- Read preloaded modules through the workspace file system without opening every file as a text document.
+
 # v2.0.10
 - Update to Slang v2026.8.
 - Highlighting grammar fixes.
