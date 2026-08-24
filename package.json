@@ -266,7 +266,7 @@
         "preinstall": "npm --prefix ./external/slang-playground run build-engine",
         "vscode:prepublish": "npm run compile",
         "compile": "node esbuild.config.mjs",
-        "test": "esbuild client/src/workspaceFilePreload.test.ts --bundle --platform=node --format=cjs --outfile=node_modules/.cache/slang-vscode-extension/workspaceFilePreload.test.cjs && node --test node_modules/.cache/slang-vscode-extension/workspaceFilePreload.test.cjs",
+        "test": "esbuild client/src/workspaceFilePreload.test.ts --bundle --platform=node --format=cjs --outfile=out/workspaceFilePreload.test.cjs && node --test out/workspaceFilePreload.test.cjs",
         "watch": "esbuild --config=esbuild.config.mjs --watch",
         "package": "node esbuild.config.mjs",
         "chrome": "npm run compile && vscode-test-web --browserType=chromium --browserOption=--enable-unsafe-webgpu --extensionDevelopmentPath=. ./test-data"
