@@ -88,6 +88,7 @@ async function initialize(params: WorkerRequest & { type: 'Initialize' }): Promi
         const emscriptenURI = getEmscriptenURI(file.uri, initializationOptions.workspaceUris);
         loadFileIntoEmscriptenFS(emscriptenURI, file.content);
     }
+    initializationOptions.files = [];
 
     return {
         succ: true,
@@ -144,7 +145,8 @@ async function slangCompilePlayground(params: WorkerRequest & { type: 'slang/com
     
     const compilationResult = await compiler.compile(params, shaderPath, initializationOptions.workspaceUris, spirvTools);
     if (compilationResult.succ === false) {
-        return compilationResult;
+        parentPort!.postMessage(compilationResult);
+        return;
     }
     parentPort!.postMessage(compilePlayground(compilationResult.result, params.uri));
 }

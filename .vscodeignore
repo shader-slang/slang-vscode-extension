@@ -4,6 +4,7 @@
 **/node_modules/
 !**/node_modules/vue
 test-data/
+out/
 **/tsconfig.json
 esbuild.config.mjs
 **/tsconfig.base.json
